@@ -29,6 +29,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField( "String", "BASE_URL", "\"/https://www.cbr-xml-daily.ru/latest.js\"")
+        }
+        debug {
+            manifestPlaceholders["ALLOW_HTTP_TRAFFIC"] = true
+            buildConfigField( "String", "BASE_URL", "\"https://www.cbr-xml-daily.ru/latest.js\"")
         }
     }
     compileOptions {
@@ -39,6 +44,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {

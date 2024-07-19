@@ -1,4 +1,4 @@
-package com.sd.exchangerates.ui.theme
+package com.sd.exchangerates.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

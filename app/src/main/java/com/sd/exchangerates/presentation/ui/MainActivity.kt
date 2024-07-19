@@ -1,4 +1,4 @@
-package com.sd.exchangerates
+package com.sd.exchangerates.presentation.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.sd.exchangerates.ui.theme.ExchangeRatesTheme
+import com.sd.exchangerates.presentation.ui.theme.ExchangeRatesTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
