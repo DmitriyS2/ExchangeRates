@@ -32,7 +32,6 @@ android {
             buildConfigField( "String", "BASE_URL", "\"/https://www.cbr-xml-daily.ru/latest.js\"")
         }
         debug {
-            manifestPlaceholders["ALLOW_HTTP_TRAFFIC"] = true
             buildConfigField( "String", "BASE_URL", "\"https://www.cbr-xml-daily.ru/latest.js\"")
         }
     }
