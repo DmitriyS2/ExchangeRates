@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ExchangeRatesTheme {
+      //      ExchangeRatesTheme {
                 val navController = rememberNavController()
                 val vm: MainViewModel = viewModel()
                 val keyboardController = LocalSoftwareKeyboardController.current
@@ -35,18 +35,16 @@ class MainActivity : ComponentActivity() {
                         startDestination = Routes.InputData.route
                     ) {
                         composable(Routes.InputData.route) {
-                            InputData(vm, navController)
+                            InputData(vm, navController, keyboardController, focusManager)
                         }
                         composable(Routes.Result.route) {
                             ResultScreen(vm, navController)
                         }
                     }
                 }
-
-                InputData(vm, navController)
             }
         }
-    }
+  //  }
 }
 sealed class Routes(val route: String) {
     data object InputData : Routes("inputData")
