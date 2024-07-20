@@ -1,6 +1,5 @@
 package com.sd.exchangerates.presentation.ui.screen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,15 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,21 +31,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.SoftwareKeyboardController
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.sd.exchangerates.R
 import com.sd.exchangerates.presentation.ui.Routes
 import com.sd.exchangerates.presentation.viewmodel.MainViewModel
-import com.sd.exchangerates.utils.checkInputText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,12 +72,12 @@ fun InputData(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            modifier = Modifier.fillMaxSize(),
-            bitmap = ImageBitmap.imageResource(id = R.drawable.background),
-            contentScale = ContentScale.FillBounds,
-            contentDescription = "back"
-        )
+//        Image(
+//            modifier = Modifier.fillMaxSize(),
+//            bitmap = ImageBitmap.imageResource(id = R.drawable.background),
+//            contentScale = ContentScale.FillBounds,
+//            contentDescription = "back"
+//        )
     }
     TopAppBar(
         title = {
@@ -97,7 +85,7 @@ fun InputData(
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Black,
-            scrolledContainerColor = Color.Transparent,
+            scrolledContainerColor = Color.Black,
             navigationIconContentColor = Color.White,
             titleContentColor = Color.White,
             actionIconContentColor = Color.White
@@ -224,30 +212,17 @@ fun InputData(
                         //     AddCurrency(expanded = expanded, currency = currency)
                         focusColorCurrency.value = Color.White
                         expanded.value = true
-
-//                    if (checkInputText(currency.value)) {
-////                        if (text.value!=vm.longWeekEndYear.value) {
-////                            vm.setLongWeekEndYear(text.value)
-////                            vm.getListLongWeekEnd(text.value)
-////                        }
-//                        //           vm.getListLongWeekEnd(text.value)
-//                        isErrorCurrency.value = false
-//                        keyboardController?.hide()
-//                        focusManager.clearFocus()
-//                    } else {
-//                        isErrorCurrency.value = true
-//                    }
                     })
                     {
                         Icon(imageVector = Icons.Default.List, contentDescription = "list")
                     }
                 },
                 colors = TextFieldDefaults.colors(
-                    focusedTextColor = Color.Black,
-                    unfocusedTextColor = Color.White,
+//                    focusedTextColor = Color.Black,
+//                    unfocusedTextColor = Color.White,
                     disabledTextColor = Color.White,
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.Black,
+//                    focusedContainerColor = Color.White,
+//                    unfocusedContainerColor = Color.Black,
                     disabledContainerColor = focusColorCurrency.value,
                     disabledTrailingIconColor = Color.Gray,
                 ),
@@ -267,10 +242,25 @@ fun InputData(
                 when {
                     summa.value.isEmpty() -> isErrorSumma.value = true
                     currency.value.isEmpty() -> isErrorCurrency.value = true
-                    else -> navController.navigate(Routes.Result.route)
+                    else -> {
+                        vm.getResult()
+                        vm.setCurrency(currency.value)
+                        vm.setSum(summa.value)
+                        navController.navigate(Routes.Result.route)
+                    }
                 }
         }) {
             Text(text = "Change")
         }
+    }
+}
+
+fun checkInputText(text: String): Boolean {
+    if (text.isEmpty()) return false
+    return try {
+        val number: Long = text.toLong()
+        number > 0
+    } catch (e: Exception) {
+        false
     }
 }

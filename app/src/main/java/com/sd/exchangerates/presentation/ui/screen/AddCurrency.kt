@@ -51,7 +51,7 @@ fun AddCurrency(expanded: MutableState<Boolean>, currency: MutableState<String>,
     }
 }
 
-enum class Currency() {
+enum class Currency {
     USD,
     EUR,
     GBP

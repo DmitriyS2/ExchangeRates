@@ -29,10 +29,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField( "String", "BASE_URL", "\"/https://www.cbr-xml-daily.ru/latest.js\"")
+            buildConfigField( "String", "BASE_URL", "\"/https://www.cbr-xml-daily.ru/\"")
         }
         debug {
-            buildConfigField( "String", "BASE_URL", "\"https://www.cbr-xml-daily.ru/latest.js\"")
+            buildConfigField( "String", "BASE_URL", "\"https://www.cbr-xml-daily.ru/\"")
         }
     }
     compileOptions {
