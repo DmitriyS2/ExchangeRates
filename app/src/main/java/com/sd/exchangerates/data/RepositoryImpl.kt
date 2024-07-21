@@ -8,17 +8,16 @@ import javax.inject.Singleton
 @Singleton
 class RepositoryImpl @Inject constructor(
     private val apiService: ApiService
-): Repository {
+) : Repository {
     override suspend fun getResultSumCurrency(): Rate? {
         try {
             val response = apiService.getRate()
-            if(!response.isSuccessful) {
+            if (!response.isSuccessful) {
                 return null
             }
             return response.body()
-        } catch (e:Exception) {
+        } catch (e: Exception) {
             return null
         }
-
     }
 }

@@ -1,16 +1,16 @@
 package com.sd.exchangerates.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sd.exchangerates.domain.dto.Rate
+import com.sd.exchangerates.domain.enums.Currency
 import com.sd.exchangerates.domain.model.RateModel
 import com.sd.exchangerates.domain.usecase.GetResultSumCurrencyUseCase
-import com.sd.exchangerates.presentation.ui.screen.Currency
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,53 +18,65 @@ class MainViewModel @Inject constructor(
     private val getResultSumCurrencyUseCase: GetResultSumCurrencyUseCase
 ) : ViewModel() {
 
-    private val _summa: MutableLiveData<Long> = MutableLiveData(0L)
-    val summa: LiveData<Long>
-        get() = _summa
+    private var summa: Long = 0L
 
-    private val _currency: MutableLiveData<String> = MutableLiveData("")
-    val currency: LiveData<String>
-        get() = _currency
-
-    private val _rate: MutableLiveData<Double> = MutableLiveData()
-    val rate: LiveData<Double>
-        get() = _rate
+    private var currentCurrency: Currency = Currency.NONE
 
     private val _result: MutableLiveData<RateModel> = MutableLiveData()
     val result: LiveData<RateModel>
         get() = _result
-
-    //  val baseCurrency = "RUB"
 
     fun getResult() {
         viewModelScope.launch {
             try {
                 _result.value = RateModel(loading = true)
                 val currentRate: Rate = getResultSumCurrencyUseCase() ?: Rate()
-                Log.d("MyLog", "rate=$currentRate")
                 if (currentRate == Rate()) {
                     _result.value = RateModel(error = true)
-                    return@launch
                 } else {
                     _result.value = RateModel(
-                        summaRub = _summa.value ?: 0L,
+                        summaRub = summa.separate(),
                         baseCurrent = currentRate.base,
-                        result = when (_currency.value) {
+                        result = when (currentCurrency.name) {
                             Currency.USD.toString() -> {
-                                currentRate.rates.USD*(_summa.value ?: 0L)
+                                getOnlyTwoSignsInResult(currentRate.rates.USD)
                             }
 
                             Currency.EUR.toString() -> {
-                                currentRate.rates.EUR*(_summa.value ?: 0L)
+                                getOnlyTwoSignsInResult(currentRate.rates.EUR)
                             }
 
                             Currency.GBP.toString() -> {
-                                currentRate.rates.GBP*(_summa.value ?: 0L)
+                                getOnlyTwoSignsInResult(currentRate.rates.GBP)
+                            }
+
+                            Currency.VND.toString() -> {
+                                getOnlyTwoSignsInResult(currentRate.rates.VND)
+                            }
+
+                            Currency.TRY.toString() -> {
+                                getOnlyTwoSignsInResult(currentRate.rates.TRY)
+                            }
+
+                            Currency.RSD.toString() -> {
+                                getOnlyTwoSignsInResult(currentRate.rates.RSD)
                             }
 
                             else -> 0.0
+                        }.toString(),
+                        currency = currentCurrency.name,
+                        date = currentRate.date.split("-").reversed().joinToString("-"),
+                        rate = when (currentCurrency.name) {
+                            Currency.USD.toString() -> getOnlyTwoSignsInRate(currentRate.rates.USD)
+                            Currency.EUR.toString() -> getOnlyTwoSignsInRate(currentRate.rates.EUR)
+                            Currency.GBP.toString() -> getOnlyTwoSignsInRate(currentRate.rates.GBP)
+                            Currency.VND.toString() -> getOnlyTwoSignsInRate(currentRate.rates.VND)
+                            Currency.TRY.toString() -> getOnlyTwoSignsInRate(currentRate.rates.TRY)
+                            Currency.RSD.toString() -> getOnlyTwoSignsInRate(currentRate.rates.RSD)
+                            else -> 0.0
                         },
-                        currency = _currency.value ?: ""
+                        title = currentCurrency.title,
+                        nominal = currentCurrency.nominal
                     )
                 }
             } catch (e: Exception) {
@@ -73,11 +85,20 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun setCurrency(value: String) {
-        _currency.value = value
+    fun setCurrency(value: Currency) {
+        currentCurrency = value
     }
 
     fun setSum(value: String) {
-        _summa.value = value.toLong()
+        summa = value.toLong()
     }
+
+    private fun getOnlyTwoSignsInResult(rate: Double): String =
+        ((((summa * rate) * 100).toLong()) / 100.0).separate()
+
+    private fun getOnlyTwoSignsInRate(rate: Double): Double =
+        ((currentCurrency.nominal / rate * 100).toLong()) / 100.0
+
+    private fun Long.separate(): String = DecimalFormat().format(this).toString()
+    private fun Double.separate(): String = DecimalFormat().format(this).toString()
 }

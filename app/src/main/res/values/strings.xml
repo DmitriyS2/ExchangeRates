@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">ExchangeRates</string>
+    <string name="input_sum">Ввод суммы</string>
+    <string name="enter_sum">Введите сумму</string>
+    <string name="enter_right_number">Введите целое положительное число</string>
+    <string name="amount_rub">Сумма, руб</string>
+    <string name="choose_currency">Выберите валюту</string>
+    <string name="currency">Валюта</string>
+    <string name="change">Change</string>
+    <string name="result">Результат</string>
+    <string name="try_again_later">Что-то пошло не так...Попробуйте позже</string>
+    <string name="retry">Retry</string>
 </resources>

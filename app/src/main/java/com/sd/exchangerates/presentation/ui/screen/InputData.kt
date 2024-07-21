@@ -1,7 +1,6 @@
 package com.sd.exchangerates.presentation.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -32,12 +31,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.sd.exchangerates.R
+import com.sd.exchangerates.domain.enums.Currency
 import com.sd.exchangerates.presentation.ui.Routes
 import com.sd.exchangerates.presentation.viewmodel.MainViewModel
 
@@ -56,32 +58,22 @@ fun InputData(
     val isErrorSumma = remember {
         mutableStateOf(false)
     }
-    val currency = remember {
-        mutableStateOf("")
-    }
     val isErrorCurrency = remember {
         mutableStateOf(false)
     }
-
+    val enumCurrency = remember {
+        mutableStateOf(Currency.NONE)
+    }
     val focusColorCurrency = remember {
         mutableStateOf(Color.Black)
     }
-
     val expanded = remember {
         mutableStateOf(false)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-//        Image(
-//            modifier = Modifier.fillMaxSize(),
-//            bitmap = ImageBitmap.imageResource(id = R.drawable.background),
-//            contentScale = ContentScale.FillBounds,
-//            contentDescription = "back"
-//        )
-    }
     TopAppBar(
         title = {
-            Text(text = "Ввод суммы", fontSize = 24.sp)
+            Text(text = stringResource(R.string.input_sum), fontSize = 24.sp)
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Black,
@@ -109,11 +101,6 @@ fun InputData(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             keyboardActions = KeyboardActions(onDone = {
                 if (checkInputText(summa.value)) {
-//                    if (text.value != vm.longWeekEndYear.value) {
-//                        vm.setLongWeekEndYear(text.value)
-//                        vm.getListLongWeekEnd(text.value)
-//                    }
-
                     isErrorSumma.value = false
                     keyboardController?.hide()
                     focusManager.clearFocus()
@@ -122,20 +109,20 @@ fun InputData(
                 }
             }),
             placeholder = {
-                Text(text = "Введите сумму", fontSize = 12.sp)
+                Text(text = stringResource(R.string.enter_sum), fontSize = 12.sp)
             },
             isError = isErrorSumma.value,
             supportingText = {
                 if (isErrorSumma.value) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
-                        text = "Введите целое положительное число ",
+                        text = stringResource(R.string.enter_right_number),
                         color = MaterialTheme.colorScheme.error
                     )
                 }
             },
             label = {
-                Text(text = "Сумма, руб", color = Color.Gray)
+                Text(text = stringResource(R.string.amount_rub), color = Color.Gray)
             },
             singleLine = true,
             leadingIcon = {
@@ -153,13 +140,11 @@ fun InputData(
                 unfocusedContainerColor = Color.Black,
                 errorCursorColor = Color.Red
             ),
-            //     shape = MaterialTheme.shapes.small.copy(bottomEnd = CornerSize(6.dp), bottomStart = CornerSize(6.dp))
         )
 
         Row {
-            
             TextField(
-                value = currency.value,
+                value = if (enumCurrency.value == Currency.NONE) "" else enumCurrency.value.name,
                 textStyle = TextStyle.Default.copy(fontSize = 32.sp, textAlign = TextAlign.Center),
                 onValueChange = {},
                 modifier = Modifier
@@ -167,38 +152,22 @@ fun InputData(
                     .padding(top = 20.dp),
                 enabled = false,
                 readOnly = false,
-                //      keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-//            keyboardActions = KeyboardActions(onDone = {
-//                if (checkInputText(text.value)) {
-////                    if (text.value != vm.longWeekEndYear.value) {
-////                        vm.setLongWeekEndYear(text.value)
-////                        vm.getListLongWeekEnd(text.value)
-////                    }
-//
-//                    isError.value = false
-//                    keyboardController?.hide()
-//                    focusManager.clearFocus()
-//                } else {
-//                    isError.value = true
-//                }
-//            }),
                 placeholder = {
-                    Text(text = "Выберите валюту", fontSize = 12.sp)
+                    Text(text = stringResource(R.string.choose_currency), fontSize = 12.sp)
                 },
                 isError = isErrorCurrency.value,
                 supportingText = {
                     if (isErrorCurrency.value) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = "Выберите валюту",
+                            text = stringResource(R.string.choose_currency),
                             color = MaterialTheme.colorScheme.error
                         )
                     }
                 },
                 label = {
-                    Text(text = "Валюта", color = Color.Gray)
+                    Text(text = stringResource(R.string.currency), color = Color.Gray)
                 },
-                //      singleLine = true,
                 leadingIcon = {
                     if (isErrorCurrency.value)
                         Icon(
@@ -209,25 +178,28 @@ fun InputData(
                 },
                 trailingIcon = {
                     IconButton(onClick = {
-                        //     AddCurrency(expanded = expanded, currency = currency)
                         focusColorCurrency.value = Color.White
                         expanded.value = true
                     })
                     {
-                        Icon(imageVector = Icons.Default.List, contentDescription = "list")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.List,
+                            contentDescription = "list"
+                        )
                     }
                 },
                 colors = TextFieldDefaults.colors(
-//                    focusedTextColor = Color.Black,
-//                    unfocusedTextColor = Color.White,
                     disabledTextColor = Color.White,
-//                    focusedContainerColor = Color.White,
-//                    unfocusedContainerColor = Color.Black,
                     disabledContainerColor = focusColorCurrency.value,
                     disabledTrailingIconColor = Color.Gray,
                 ),
             )
-            AddCurrency(expanded = expanded, currency = currency, color = focusColorCurrency, error = isErrorCurrency)
+            AddCurrency(
+                expanded = expanded,
+                enumCurrency = enumCurrency,
+                color = focusColorCurrency,
+                error = isErrorCurrency
+            )
         }
         Button(
             modifier = Modifier
@@ -241,16 +213,16 @@ fun InputData(
             onClick = {
                 when {
                     summa.value.isEmpty() -> isErrorSumma.value = true
-                    currency.value.isEmpty() -> isErrorCurrency.value = true
+                    enumCurrency.value == Currency.NONE -> isErrorCurrency.value = true
                     else -> {
                         vm.getResult()
-                        vm.setCurrency(currency.value)
+                        vm.setCurrency(enumCurrency.value)
                         vm.setSum(summa.value)
                         navController.navigate(Routes.Result.route)
                     }
                 }
-        }) {
-            Text(text = "Change")
+            }) {
+            Text(text = stringResource(R.string.change), fontSize = 18.sp)
         }
     }
 }

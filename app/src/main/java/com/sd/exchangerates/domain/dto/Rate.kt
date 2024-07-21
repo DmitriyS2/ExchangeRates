@@ -1,9 +1,11 @@
 package com.sd.exchangerates.domain.dto
 
 data class Rate(
-    val base: String = "",
-    val date: String = "",
-  //  val disclaimer: String,
+    val base: String = BASE_STRING,
+    val date: String = BASE_STRING,
     val rates: Rates = Rates(),
-//    val timestamp: Int
-)
+) {
+    companion object {
+        private const val BASE_STRING = ""
+    }
+}
