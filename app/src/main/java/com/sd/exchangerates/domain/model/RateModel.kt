@@ -14,7 +14,6 @@ data class RateModel(
 ) {
     companion object {
         private const val BASE_DOUBLE = 0.0
-        private const val BASE_LONG = 0L
         private const val BASE_INT = 0
         private const val BASE_STRING = ""
     }

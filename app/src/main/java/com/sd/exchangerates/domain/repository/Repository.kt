@@ -1,4 +1,4 @@
-package com.sd.exchangerates.presentation.repository
+package com.sd.exchangerates.domain.repository
 
 import com.sd.exchangerates.domain.dto.Rate
 

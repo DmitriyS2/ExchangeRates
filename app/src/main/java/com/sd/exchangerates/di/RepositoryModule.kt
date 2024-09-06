@@ -1,7 +1,7 @@
 package com.sd.exchangerates.di
 
 import com.sd.exchangerates.data.RepositoryImpl
-import com.sd.exchangerates.presentation.repository.Repository
+import com.sd.exchangerates.domain.repository.Repository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

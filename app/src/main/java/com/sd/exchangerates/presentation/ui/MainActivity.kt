@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +26,7 @@ import com.sd.exchangerates.presentation.ui.screen.ResultScreen
 import com.sd.exchangerates.presentation.ui.theme.ExchangeRatesTheme
 import com.sd.exchangerates.presentation.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -45,12 +49,40 @@ class MainActivity : ComponentActivity() {
                     )
                     NavHost(
                         navController = navController,
-                        startDestination = Routes.InputData.route
+                        startDestination = Routes.InputData.route,
                     ) {
-                        composable(Routes.InputData.route) {
+                        composable(
+                            Routes.InputData.route,
+                            enterTransition = {
+                                slideIntoContainer(
+                                    animationSpec = tween(300, easing = EaseIn),
+                                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                                )
+                            },
+                            exitTransition = {
+                                slideOutOfContainer(
+                                    animationSpec = tween(300, easing = EaseIn),
+                                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                                )
+                            },
+                        ) {
                             InputData(vm, navController, keyboardController, focusManager)
                         }
-                        composable(Routes.Result.route) {
+                        composable(
+                            Routes.Result.route,
+                            enterTransition = {
+                                slideIntoContainer(
+                                    animationSpec = tween(300, easing = EaseIn),
+                                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                                )
+                            },
+                            exitTransition = {
+                                slideOutOfContainer(
+                                    animationSpec = tween(300, easing = EaseIn),
+                                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                                )
+                            },
+                        ) {
                             ResultScreen(vm, navController)
                         }
                     }
