@@ -24,8 +24,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -33,13 +32,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.sd.exchangerates.R
-import com.sd.exchangerates.domain.enums.Currency
 import com.sd.exchangerates.presentation.ui.Routes
 import com.sd.exchangerates.presentation.viewmodel.MainViewModel
 
@@ -52,24 +51,7 @@ fun InputData(
     focusManager: FocusManager
 ) {
 
-    val summa = remember {
-        mutableStateOf("")
-    }
-    val isErrorSumma = remember {
-        mutableStateOf(false)
-    }
-    val isErrorCurrency = remember {
-        mutableStateOf(false)
-    }
-    val enumCurrency = remember {
-        mutableStateOf(Currency.NONE)
-    }
-    val focusColorCurrency = remember {
-        mutableStateOf(Color.Black)
-    }
-    val expanded = remember {
-        mutableStateOf(false)
-    }
+    val state = vm.state.collectAsState()
 
     TopAppBar(
         title = {
@@ -91,29 +73,24 @@ fun InputData(
         verticalArrangement = Arrangement.Center
     ) {
         TextField(
-            value = summa.value,
+            value = state.value.summaRub,
             textStyle = TextStyle.Default.copy(fontSize = 28.sp, textAlign = TextAlign.Center),
             onValueChange = { newText ->
-                summa.value = newText
+                vm.setSummaRub(newText)
             },
             modifier = Modifier
                 .fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             keyboardActions = KeyboardActions(onDone = {
-                if (checkInputText(summa.value)) {
-                    isErrorSumma.value = false
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                } else {
-                    isErrorSumma.value = true
-                }
+                keyboardController?.hide()
+                focusManager.clearFocus()
             }),
             placeholder = {
                 Text(text = stringResource(R.string.enter_sum), fontSize = 12.sp)
             },
-            isError = isErrorSumma.value,
+            isError = state.value.isErrorSumma,
             supportingText = {
-                if (isErrorSumma.value) {
+                if (state.value.isErrorSumma) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(R.string.enter_right_number),
@@ -126,7 +103,7 @@ fun InputData(
             },
             singleLine = true,
             leadingIcon = {
-                if (isErrorSumma.value)
+                if (state.value.isErrorSumma)
                     Icon(
                         Icons.Default.Warning,
                         "errorSumma",
@@ -144,8 +121,8 @@ fun InputData(
 
         Row {
             TextField(
-                value = if (enumCurrency.value == Currency.NONE) "" else enumCurrency.value.name,
-                textStyle = TextStyle.Default.copy(fontSize = 32.sp, textAlign = TextAlign.Center),
+                value = state.value.currency,
+                textStyle = TextStyle.Default.copy(fontSize = 20.sp, textAlign = TextAlign.Center),
                 onValueChange = {},
                 modifier = Modifier
                     .fillMaxWidth()
@@ -155,9 +132,9 @@ fun InputData(
                 placeholder = {
                     Text(text = stringResource(R.string.choose_currency), fontSize = 12.sp)
                 },
-                isError = isErrorCurrency.value,
+                isError = state.value.isErrorCurrency,
                 supportingText = {
-                    if (isErrorCurrency.value) {
+                    if (state.value.isErrorCurrency) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
                             text = stringResource(R.string.choose_currency),
@@ -169,7 +146,7 @@ fun InputData(
                     Text(text = stringResource(R.string.currency), color = Color.Gray)
                 },
                 leadingIcon = {
-                    if (isErrorCurrency.value)
+                    if (state.value.isErrorCurrency)
                         Icon(
                             Icons.Default.Warning,
                             "errorCurrency",
@@ -178,8 +155,8 @@ fun InputData(
                 },
                 trailingIcon = {
                     IconButton(onClick = {
-                        focusColorCurrency.value = Color.White
-                        expanded.value = true
+                        vm.setFocusColorCurrency(Color.White)
+                        vm.setValuteMenuVisibility(true)
                     })
                     {
                         Icon(
@@ -190,15 +167,27 @@ fun InputData(
                 },
                 colors = TextFieldDefaults.colors(
                     disabledTextColor = Color.White,
-                    disabledContainerColor = focusColorCurrency.value,
+                    disabledContainerColor = state.value.focusColorCurrency,
                     disabledTrailingIconColor = Color.Gray,
                 ),
             )
             AddCurrency(
-                expanded = expanded,
-                enumCurrency = enumCurrency,
-                color = focusColorCurrency,
-                error = isErrorCurrency
+                vm = vm,
+                state = state,
+            )
+        }
+        if (state.value.currency.isNotEmpty()) {
+            Text(
+                text = stringResource(
+                    R.string.rate_text,
+                    state.value.rate,
+                    state.value.baseCurrent,
+                    state.value.nominal,
+                    state.value.title
+                ),
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
             )
         }
         Button(
@@ -211,28 +200,11 @@ fun InputData(
                 contentColor = Color.Gray
             ),
             onClick = {
-                when {
-                    summa.value.isEmpty() -> isErrorSumma.value = true
-                    enumCurrency.value == Currency.NONE -> isErrorCurrency.value = true
-                    else -> {
-                        vm.getResult()
-                        vm.setCurrency(enumCurrency.value)
-                        vm.setSum(summa.value)
-                        navController.navigate(Routes.Result.route)
-                    }
+                if (vm.onClickChange()) {
+                    navController.navigate(Routes.Result.route)
                 }
             }) {
             Text(text = stringResource(R.string.change), fontSize = 18.sp)
         }
-    }
-}
-
-fun checkInputText(text: String): Boolean {
-    if (text.isEmpty()) return false
-    return try {
-        val number: Long = text.toLong()
-        number > 0
-    } catch (e: Exception) {
-        false
     }
 }

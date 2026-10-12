@@ -1,82 +1,44 @@
 package com.sd.exchangerates.presentation.ui.screen
 
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.sd.exchangerates.domain.enums.Currency
+import com.sd.exchangerates.domain.model.RateModel
+import com.sd.exchangerates.presentation.viewmodel.MainViewModel
 
 @Composable
 fun AddCurrency(
-    expanded: MutableState<Boolean>,
-    enumCurrency: MutableState<Currency>,
-    color: MutableState<Color>,
-    error: MutableState<Boolean>
+    vm: MainViewModel,
+    state: State<RateModel>,
 ) {
     DropdownMenu(
-        modifier = Modifier.width(60.dp),
-        expanded = expanded.value,
+        modifier = Modifier
+            .width(60.dp)
+            .heightIn(max = 200.dp),
+        expanded = state.value.isValuteMenuVisible,
         offset = DpOffset((200).dp, (-10).dp),
         onDismissRequest = {
-            expanded.value = false
-            color.value = Color.Black
+            vm.setValuteMenuVisibility(false)
+            vm.setFocusColorCurrency(Color.Black)
         },
 
         ) {
-        DropdownMenuItem(text = {
-            Text(Currency.USD.name, textAlign = TextAlign.Center)
-        }, onClick = {
-            enumCurrency.value = Currency.USD
-            error.value = false
-            expanded.value = false
-            color.value = Color.Black
-        })
-        DropdownMenuItem(text = {
-            Text(Currency.EUR.name, textAlign = TextAlign.Center)
-        }, onClick = {
-            enumCurrency.value = Currency.EUR
-            error.value = false
-            expanded.value = false
-            color.value = Color.Black
-        })
-        DropdownMenuItem(text = {
-            Text(Currency.GBP.name, textAlign = TextAlign.Center)
-        }, onClick = {
-            enumCurrency.value = Currency.GBP
-            error.value = false
-            expanded.value = false
-            color.value = Color.Black
-        })
-        DropdownMenuItem(text = {
-            Text(Currency.VND.name, textAlign = TextAlign.Center)
-        }, onClick = {
-            enumCurrency.value = Currency.VND
-            error.value = false
-            expanded.value = false
-            color.value = Color.Black
-        })
-        DropdownMenuItem(text = {
-            Text(Currency.TRY.name, textAlign = TextAlign.Center)
-        }, onClick = {
-            enumCurrency.value = Currency.TRY
-            error.value = false
-            expanded.value = false
-            color.value = Color.Black
-        })
-        DropdownMenuItem(text = {
-            Text(Currency.RSD.name, textAlign = TextAlign.Center)
-        }, onClick = {
-            enumCurrency.value = Currency.RSD
-            error.value = false
-            expanded.value = false
-            color.value = Color.Black
-        })
+        state.value.allCurrency.forEach { valute ->
+            DropdownMenuItem(text = {
+                Text(valute.code, textAlign = TextAlign.Center)
+            }, onClick = {
+                vm.setValute(valute)
+                vm.setFocusColorCurrency(Color.Black)
+            })
+        }
     }
 }

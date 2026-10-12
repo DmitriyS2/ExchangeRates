@@ -20,8 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,12 +32,13 @@ import androidx.navigation.NavHostController
 import com.sd.exchangerates.R
 import com.sd.exchangerates.presentation.ui.Routes
 import com.sd.exchangerates.presentation.viewmodel.MainViewModel
+import com.sd.exchangerates.util.separate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultScreen(vm: MainViewModel, navController: NavHostController) {
 
-    val resultRate by vm.result.observeAsState()
+    val state by vm.state.collectAsState()
 
     TopAppBar(
         title = {
@@ -63,7 +64,7 @@ fun ResultScreen(vm: MainViewModel, navController: NavHostController) {
     )
 
     when {
-        resultRate?.loading == true -> {
+        state.loading -> {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -75,7 +76,7 @@ fun ResultScreen(vm: MainViewModel, navController: NavHostController) {
             }
         }
 
-        resultRate?.error == true -> {
+        state.error -> {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -89,7 +90,7 @@ fun ResultScreen(vm: MainViewModel, navController: NavHostController) {
                         contentColor = Color.Gray
                     ),
                     onClick = {
-                        vm.getResult()
+                        vm.getData()
                     }) {
                     Text(text = stringResource(R.string.retry))
                 }
@@ -103,7 +104,7 @@ fun ResultScreen(vm: MainViewModel, navController: NavHostController) {
                     .padding(horizontal = 30.dp),
                 Alignment.Center
             ) {
-                resultRate?.let {
+                state.let {
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(
                             modifier = Modifier
@@ -113,7 +114,7 @@ fun ResultScreen(vm: MainViewModel, navController: NavHostController) {
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "${it.summaRub} ${it.baseCurrent}",
+                                text = "${it.summaRub.separate()} ${it.baseCurrent}",
                                 fontSize = 22.sp,
                                 modifier = Modifier.padding(vertical = 20.dp)
                             )
@@ -124,7 +125,14 @@ fun ResultScreen(vm: MainViewModel, navController: NavHostController) {
                                 modifier = Modifier.padding(vertical = 20.dp)
                             )
                             Text(
-                                text = "курс на ${it.date}: ${it.rate} ${it.baseCurrent} за ${it.nominal} ${it.title}",
+                                text = stringResource(
+                                    R.string.rate_on_date,
+                                    it.date,
+                                    it.rate,
+                                    it.baseCurrent,
+                                    it.nominal,
+                                    it.title
+                                ),
                                 fontSize = 8.sp,
                                 modifier = Modifier.padding(bottom = 10.dp)
                             )

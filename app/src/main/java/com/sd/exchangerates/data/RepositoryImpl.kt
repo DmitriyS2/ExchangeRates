@@ -11,12 +11,12 @@ class RepositoryImpl @Inject constructor(
 ) : Repository {
     override suspend fun getResultSumCurrency(): Rate? {
         try {
-            val response = apiService.getRate()
+            val response = apiService.getCompleteRate()
             if (!response.isSuccessful) {
                 return null
             }
             return response.body()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return null
         }
     }
