@@ -12,8 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sd.exchangerates.R
+import com.sd.exchangerates.presentation.ui.theme.ExchangeRatesTheme
 
 @Composable
 fun ErrorScreen(onRetryClick: () -> Unit) {
@@ -33,5 +35,13 @@ fun ErrorScreen(onRetryClick: () -> Unit) {
         ) {
             Text(text = stringResource(R.string.retry), color = Color.Black)
         }
+    }
+}
+
+@Preview()
+@Composable
+fun PreviewErrorScreen() {
+    ExchangeRatesTheme {
+        ErrorScreen {}
     }
 }

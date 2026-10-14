@@ -17,25 +17,24 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.sd.exchangerates.R
+import com.sd.exchangerates.domain.model.RateModel
 import com.sd.exchangerates.presentation.ui.Routes
-import com.sd.exchangerates.presentation.viewmodel.MainViewModel
+import com.sd.exchangerates.presentation.ui.theme.ExchangeRatesTheme
 import com.sd.exchangerates.util.separate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResultScreen(vm: MainViewModel, navController: NavHostController) {
-
-    val state by vm.state.collectAsState()
+fun ResultScreen(state: RateModel, navController: NavHostController) {
 
     TopAppBar(
         title = {
@@ -50,7 +49,10 @@ fun ResultScreen(vm: MainViewModel, navController: NavHostController) {
         ),
         navigationIcon = {
             IconButton(onClick = {
-                navController.navigate(Routes.InputData.route)
+                navController.navigate(Routes.InputData.route) {
+                    popUpTo(Routes.Result.route) { inclusive = true }
+                    launchSingleTop = true
+                }
             }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -101,5 +103,16 @@ fun ResultScreen(vm: MainViewModel, navController: NavHostController) {
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewResultScreen() {
+    ExchangeRatesTheme {
+        ResultScreen(
+            RateModel(summaRub = "1000", result = "10", currency = "USD"),
+            NavHostController(LocalContext.current)
+        )
     }
 }

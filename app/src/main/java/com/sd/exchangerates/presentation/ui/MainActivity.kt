@@ -10,12 +10,15 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.imageResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,9 +39,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExchangeRatesTheme {
                 val navController = rememberNavController()
-                val vm: MainViewModel = viewModel()
-                val keyboardController = LocalSoftwareKeyboardController.current
-                val focusManager = LocalFocusManager.current
+                val vm: MainViewModel = hiltViewModel()
 
                 Box(modifier = Modifier.fillMaxSize()) {
                     Image(
@@ -66,7 +67,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             },
                         ) {
-                            InputDataScreen(vm, navController, keyboardController, focusManager)
+                            InputDataScreen(vm, navController)
                         }
                         composable(
                             Routes.Result.route,
@@ -83,7 +84,8 @@ class MainActivity : ComponentActivity() {
                                 )
                             },
                         ) {
-                            ResultScreen(vm, navController)
+                            val state by vm.state.collectAsState()
+                            ResultScreen(state, navController)
                         }
                     }
                 }
