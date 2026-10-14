@@ -54,7 +54,7 @@ class MainViewModel @Inject constructor(
             _state.update { it.copy(isErrorSumma = false, isErrorCurrency = true) }
             false
         } else {
-            _state.update { it.copy(result = getOnlyTwoSignsInResult()) }
+            _state.update { it.copy(isErrorSumma = false, isErrorCurrency = false, result = getOnlyTwoSignsInResult()) }
             true
         }
     }
@@ -65,10 +65,6 @@ class MainViewModel @Inject constructor(
 
     private fun getOnlyTwoSignsInResult(): String =
         (((((state.value.summaRub.toLong() * state.value.nominal) / state.value.rate) * 100).toLong()) / 100.0).separate()
-
-    private fun getOnlyTwoSignsInRate(rate: Double): Double =
-        //   ((currentCurrency.nominal / rate * 100).toLong()) / 100.0
-        ((1 / rate * 100).toLong()) / 100.0
 
     fun setValute(valute: Valute) {
         _state.update {

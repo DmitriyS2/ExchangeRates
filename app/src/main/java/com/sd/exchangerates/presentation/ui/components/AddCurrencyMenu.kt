@@ -1,4 +1,4 @@
-package com.sd.exchangerates.presentation.ui.screen
+package com.sd.exchangerates.presentation.ui.components
 
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width

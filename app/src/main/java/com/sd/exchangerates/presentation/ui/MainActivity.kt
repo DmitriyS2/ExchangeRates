@@ -21,7 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.sd.exchangerates.R
-import com.sd.exchangerates.presentation.ui.screen.InputData
+import com.sd.exchangerates.presentation.ui.screen.InputDataScreen
 import com.sd.exchangerates.presentation.ui.screen.ResultScreen
 import com.sd.exchangerates.presentation.ui.theme.ExchangeRatesTheme
 import com.sd.exchangerates.presentation.viewmodel.MainViewModel
@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             },
                         ) {
-                            InputData(vm, navController, keyboardController, focusManager)
+                            InputDataScreen(vm, navController, keyboardController, focusManager)
                         }
                         composable(
                             Routes.Result.route,
@@ -93,6 +93,6 @@ class MainActivity : ComponentActivity() {
 }
 
 sealed class Routes(val route: String) {
-    data object InputData : Routes("inputData")
+    data object InputData : Routes("inputDataScreen")
     data object Result : Routes("resultScreen")
 }
