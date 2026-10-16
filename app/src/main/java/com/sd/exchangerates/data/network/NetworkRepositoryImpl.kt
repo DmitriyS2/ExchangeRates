@@ -1,14 +1,15 @@
-package com.sd.exchangerates.data
+package com.sd.exchangerates.data.network
 
 import com.sd.exchangerates.domain.dto.Rate
-import com.sd.exchangerates.domain.repository.Repository
+import com.sd.exchangerates.domain.repository.NetworkRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RepositoryImpl @Inject constructor(
+class NetworkRepositoryImpl @Inject constructor(
     private val apiService: ApiService
-) : Repository {
+) : NetworkRepository {
+
     override suspend fun getResultSumCurrency(): Rate? {
         try {
             val response = apiService.getCompleteRate()

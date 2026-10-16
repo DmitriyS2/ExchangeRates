@@ -1,0 +1,10 @@
+package com.sd.exchangerates.data.db
+
+import androidx.room.Database
+import androidx.room.RoomDatabase
+
+
+@Database(entities = [ValuteEntity::class], version = 1, exportSchema = false)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun valuteDao(): ValuteDao
+}

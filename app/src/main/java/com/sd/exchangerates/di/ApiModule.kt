@@ -1,7 +1,7 @@
 package com.sd.exchangerates.di
 
 import com.sd.exchangerates.BuildConfig
-import com.sd.exchangerates.data.ApiService
+import com.sd.exchangerates.data.network.ApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

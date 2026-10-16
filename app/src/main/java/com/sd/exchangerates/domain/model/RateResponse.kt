@@ -3,7 +3,7 @@ package com.sd.exchangerates.domain.model
 import com.sd.exchangerates.domain.dto.Rate
 import com.sd.exchangerates.domain.dto.Valute
 import com.sd.exchangerates.util.BASE_STRING
-import com.sd.exchangerates.util.toLocalDate
+import com.sd.exchangerates.util.toStringAsLocalDate
 
 data class RateResponse(
     val date: String = BASE_STRING,
@@ -13,7 +13,7 @@ data class RateResponse(
 fun Rate?.toRateResponse(): RateResponse? {
     return this?.let {
         RateResponse(
-            date = date.toLocalDate(),
+            date = date.toStringAsLocalDate(),
             valutes = valute.map { it.value }
         )
     }

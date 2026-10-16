@@ -2,6 +2,6 @@ package com.sd.exchangerates.domain.repository
 
 import com.sd.exchangerates.domain.dto.Rate
 
-interface Repository {
+interface NetworkRepository {
     suspend fun getResultSumCurrency(): Rate?
 }

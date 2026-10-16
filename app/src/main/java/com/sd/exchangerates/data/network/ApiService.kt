@@ -1,4 +1,4 @@
-package com.sd.exchangerates.data
+package com.sd.exchangerates.data.network
 
 import com.sd.exchangerates.domain.dto.Rate
 import retrofit2.Response
