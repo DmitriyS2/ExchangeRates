@@ -24,7 +24,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,26 +34,23 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.sd.exchangerates.R
-import com.sd.exchangerates.presentation.ui.Routes
 import com.sd.exchangerates.presentation.ui.components.AddCurrency
-import com.sd.exchangerates.presentation.viewmodel.MainViewModel
+import com.sd.exchangerates.presentation.ui.contract.RateEvent
+import com.sd.exchangerates.presentation.ui.contract.RateState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputDataScreen(
-    vm: MainViewModel = hiltViewModel(),
-    navController: NavHostController,
+    state: RateState,
+    onEvent: (RateEvent) -> Unit,
 ) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-
-    val state = vm.state.collectAsState()
 
     TopAppBar(
         title = {
@@ -70,9 +66,9 @@ fun InputDataScreen(
     )
 
     when {
-        state.value.loading -> LoadingScreen()
+        state.loading -> LoadingScreen()
 
-        state.value.error -> ErrorScreen { vm.getData() }
+        state.error -> ErrorScreen { onEvent(RateEvent.OnRetryClick) }
 
         else -> {
             Column(
@@ -83,13 +79,13 @@ fun InputDataScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 TextField(
-                    value = state.value.summaRub,
+                    value = state.summaRub,
                     textStyle = TextStyle.Default.copy(
                         fontSize = 28.sp,
                         textAlign = TextAlign.Center
                     ),
                     onValueChange = { newText ->
-                        vm.setSummaRub(newText)
+                        onEvent(RateEvent.OnChangeSumma(newText))
                     },
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -101,9 +97,9 @@ fun InputDataScreen(
                     placeholder = {
                         Text(text = stringResource(R.string.enter_sum), fontSize = 12.sp)
                     },
-                    isError = state.value.isErrorSumma,
+                    isError = state.isErrorSumma,
                     supportingText = {
-                        if (state.value.isErrorSumma) {
+                        if (state.isErrorSumma) {
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = stringResource(R.string.enter_right_number),
@@ -116,7 +112,7 @@ fun InputDataScreen(
                     },
                     singleLine = true,
                     leadingIcon = {
-                        if (state.value.isErrorSumma)
+                        if (state.isErrorSumma)
                             Icon(
                                 Icons.Default.Warning,
                                 "errorSumma",
@@ -134,7 +130,7 @@ fun InputDataScreen(
 
                 Row {
                     TextField(
-                        value = state.value.currency,
+                        value = state.currency,
                         textStyle = TextStyle.Default.copy(
                             fontSize = 20.sp,
                             textAlign = TextAlign.Center
@@ -148,9 +144,9 @@ fun InputDataScreen(
                         placeholder = {
                             Text(text = stringResource(R.string.choose_currency), fontSize = 12.sp)
                         },
-                        isError = state.value.isErrorCurrency,
+                        isError = state.isErrorCurrency,
                         supportingText = {
-                            if (state.value.isErrorCurrency) {
+                            if (state.isErrorCurrency) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = stringResource(R.string.choose_currency),
@@ -162,7 +158,7 @@ fun InputDataScreen(
                             Text(text = stringResource(R.string.currency), color = Color.Gray)
                         },
                         leadingIcon = {
-                            if (state.value.isErrorCurrency)
+                            if (state.isErrorCurrency)
                                 Icon(
                                     Icons.Default.Warning,
                                     "errorCurrency",
@@ -171,8 +167,7 @@ fun InputDataScreen(
                         },
                         trailingIcon = {
                             IconButton(onClick = {
-                                vm.setFocusColorCurrency(Color.White)
-                                vm.setValuteMenuVisibility(true)
+                                onEvent(RateEvent.OnChangeValuteMenuVisibility(Color.White, true))
                             })
                             {
                                 Icon(
@@ -183,23 +178,23 @@ fun InputDataScreen(
                         },
                         colors = TextFieldDefaults.colors(
                             disabledTextColor = Color.White,
-                            disabledContainerColor = state.value.focusColorCurrency,
+                            disabledContainerColor = state.focusColorCurrency,
                             disabledTrailingIconColor = Color.Gray,
                         ),
                     )
                     AddCurrency(
-                        vm = vm,
+                        onEvent = onEvent,
                         state = state,
                     )
                 }
-                if (state.value.currency.isNotEmpty()) {
+                if (state.currency.isNotEmpty()) {
                     Text(
                         text = stringResource(
                             R.string.rate_text,
-                            state.value.rate,
-                            state.value.baseCurrent,
-                            state.value.nominal,
-                            state.value.title
+                            state.rate,
+                            state.baseCurrent,
+                            state.nominal,
+                            state.title
                         ),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
@@ -216,13 +211,17 @@ fun InputDataScreen(
                         contentColor = Color.Gray
                     ),
                     onClick = {
-                        if (vm.onClickChange()) {
-                            navController.navigate(Routes.Result.route)
-                        }
+                        onEvent(RateEvent.OnClickButtonChange)
                     }) {
                     Text(text = stringResource(R.string.change), fontSize = 18.sp)
                 }
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewInputDataScreen() {
+    InputDataScreen(state = RateState()) { }
 }

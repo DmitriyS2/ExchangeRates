@@ -1,4 +1,4 @@
-package com.sd.exchangerates.domain.model
+package com.sd.exchangerates.presentation.ui.contract
 
 import androidx.compose.ui.graphics.Color
 import com.sd.exchangerates.domain.dto.Valute
@@ -7,7 +7,7 @@ import com.sd.exchangerates.util.BASE_DOUBLE
 import com.sd.exchangerates.util.BASE_INT
 import com.sd.exchangerates.util.BASE_STRING
 
-data class RateModel(
+data class RateState(
     val loading: Boolean = false,
     val error: Boolean = false,
     val allCurrency: List<Valute> = emptyList(),
@@ -22,5 +22,5 @@ data class RateModel(
     val title: String = BASE_STRING,
     val nominal: Int = BASE_INT,
     val isValuteMenuVisible: Boolean = false,
-    val focusColorCurrency: Color = Color.Black,
+    val focusColorCurrency: Color = Color.Companion.Black,
 )

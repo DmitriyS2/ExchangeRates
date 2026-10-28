@@ -27,14 +27,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.sd.exchangerates.R
-import com.sd.exchangerates.domain.model.RateModel
+import com.sd.exchangerates.presentation.ui.contract.RateState
 import com.sd.exchangerates.presentation.ui.Routes
+import com.sd.exchangerates.presentation.ui.contract.RateEvent
 import com.sd.exchangerates.presentation.ui.theme.ExchangeRatesTheme
 import com.sd.exchangerates.util.separate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResultScreen(state: RateModel, navController: NavHostController) {
+fun ResultScreen(
+    state: RateState,
+    onEvent: (RateEvent) -> Unit,
+) {
 
     TopAppBar(
         title = {
@@ -49,10 +53,7 @@ fun ResultScreen(state: RateModel, navController: NavHostController) {
         ),
         navigationIcon = {
             IconButton(onClick = {
-                navController.navigate(Routes.InputData.route) {
-                    popUpTo(Routes.Result.route) { inclusive = true }
-                    launchSingleTop = true
-                }
+                onEvent(RateEvent.OnClickBackFromResult)
             }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -111,8 +112,7 @@ fun ResultScreen(state: RateModel, navController: NavHostController) {
 fun PreviewResultScreen() {
     ExchangeRatesTheme {
         ResultScreen(
-            RateModel(summaRub = "1000", result = "10", currency = "USD"),
-            NavHostController(LocalContext.current)
-        )
+            RateState(summaRub = "1000", result = "10", currency = "USD")
+        ) {}
     }
 }
