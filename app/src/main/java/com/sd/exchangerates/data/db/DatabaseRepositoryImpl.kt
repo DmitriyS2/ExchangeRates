@@ -2,6 +2,7 @@ package com.sd.exchangerates.data.db
 
 import com.sd.exchangerates.domain.dto.Rate
 import com.sd.exchangerates.domain.dto.Valute
+import com.sd.exchangerates.domain.dto.rub
 import com.sd.exchangerates.domain.repository.DatabaseRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,6 +30,8 @@ class DatabaseRepositoryImpl @Inject constructor(
     override suspend fun insertValutes(rate: Rate) {
         val date = rate.date
         val valutes: List<Valute> = rate.valute.map { it.value }
+//        val valutes: MutableList<Valute> = rate.valute.map { it.value }.toMutableList()
+//        valutes.add(rub)
         val entities: List<ValuteEntity> = valutes.map { it.toEntity(date) }
         valuteDao.insertValutes(entities)
     }

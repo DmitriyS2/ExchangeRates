@@ -19,3 +19,12 @@ data class Valute(
     @SerializedName("Previous")
     val previousValue: Double = BASE_DOUBLE
 )
+
+val rub: Valute = Valute(
+    id = "R01",
+    code = "RUB",
+    nominal = 1,
+    name = "Российский рубль",
+    value = 1.0,
+    previousValue = 1.0,
+)
