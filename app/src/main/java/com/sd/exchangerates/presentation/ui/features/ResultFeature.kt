@@ -9,6 +9,7 @@ import com.sd.exchangerates.presentation.ui.Routes
 import com.sd.exchangerates.presentation.ui.contract.RateEffect
 import com.sd.exchangerates.presentation.ui.screen.ResultScreen
 import com.sd.exchangerates.presentation.viewmodel.MainViewModel
+import com.sd.exchangerates.util.noActions
 
 @Composable
 fun ResultFeature(
@@ -26,7 +27,7 @@ fun ResultFeature(
     LaunchedEffect(Unit) {
         vm.effect.collect { effect ->
             when (effect) {
-                RateEffect.NavigateToResult -> {}
+                RateEffect.NavigateToResult -> noActions()
                 RateEffect.NavigateToInputData -> navController.navigate(Routes.InputData.route) {
                     popUpTo(Routes.Result.route) { inclusive = true }
                     launchSingleTop = true

@@ -20,17 +20,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.sd.exchangerates.R
-import com.sd.exchangerates.presentation.ui.contract.RateState
-import com.sd.exchangerates.presentation.ui.Routes
+import com.sd.exchangerates.domain.dto.Valute
 import com.sd.exchangerates.presentation.ui.contract.RateEvent
+import com.sd.exchangerates.presentation.ui.contract.RateState
 import com.sd.exchangerates.presentation.ui.theme.ExchangeRatesTheme
+import com.sd.exchangerates.util.noActions
 import com.sd.exchangerates.util.separate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,13 +78,13 @@ fun ResultScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "${it.summaRub.separate()} ${it.baseCurrent}",
+                        text = "${it.baseAmount.separate()} ${it.baseValute.code}",
                         fontSize = 22.sp,
                         modifier = Modifier.padding(vertical = 20.dp)
                     )
                     Text(text = "=", fontSize = 24.sp)
                     Text(
-                        text = "${it.result} ${it.currency}",
+                        text = "${it.resultAmount} ${it.resultValute.code}",
                         fontSize = 22.sp,
                         modifier = Modifier.padding(vertical = 20.dp)
                     )
@@ -93,10 +92,10 @@ fun ResultScreen(
                         text = stringResource(
                             R.string.rate_on_date,
                             it.date,
-                            it.rate,
-                            it.baseCurrent,
-                            it.nominal,
-                            it.title
+                            it.crossRate,
+                            it.baseValute.code,
+                            it.resultValute.nominal,
+                            it.resultValute.name
                         ),
                         fontSize = 8.sp,
                         modifier = Modifier.padding(bottom = 10.dp)
@@ -112,7 +111,7 @@ fun ResultScreen(
 fun PreviewResultScreen() {
     ExchangeRatesTheme {
         ResultScreen(
-            RateState(summaRub = "1000", result = "10", currency = "USD")
-        ) {}
+            RateState(baseAmount = "1000", resultAmount = "10", resultValute = Valute(code = "USD"))
+        ) { noActions() }
     }
 }

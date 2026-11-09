@@ -10,6 +10,7 @@ import com.sd.exchangerates.presentation.ui.Routes
 import com.sd.exchangerates.presentation.ui.contract.RateEffect
 import com.sd.exchangerates.presentation.ui.screen.InputDataScreen
 import com.sd.exchangerates.presentation.viewmodel.MainViewModel
+import com.sd.exchangerates.util.noActions
 
 @Composable
 fun InputDataFeature(
@@ -18,7 +19,6 @@ fun InputDataFeature(
 ) {
 
     val state = vm.state.collectAsState()
-    val context = LocalContext.current
 
     InputDataScreen(
         state = state.value,
@@ -29,7 +29,7 @@ fun InputDataFeature(
         vm.effect.collect { effect ->
             when (effect) {
                 RateEffect.NavigateToResult -> navController.navigate(Routes.Result.route)
-                RateEffect.NavigateToInputData -> {}
+                RateEffect.NavigateToInputData -> noActions()
             }
         }
     }

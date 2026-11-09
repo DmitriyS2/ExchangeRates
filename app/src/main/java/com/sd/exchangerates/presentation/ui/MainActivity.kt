@@ -8,9 +8,11 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
@@ -25,7 +27,6 @@ import com.sd.exchangerates.presentation.ui.theme.ExchangeRatesTheme
 import com.sd.exchangerates.presentation.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,13 +37,13 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val vm: MainViewModel = hiltViewModel()
 
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Image(
-                        modifier = Modifier.fillMaxSize(),
-                        bitmap = ImageBitmap.imageResource(id = R.drawable.background),
-                        contentScale = ContentScale.FillBounds,
-                        contentDescription = "background"
-                    )
+                Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
+//                    Image(
+//                        modifier = Modifier.fillMaxSize(),
+//                        bitmap = ImageBitmap.imageResource(id = R.drawable.background),
+//                        contentScale = ContentScale.FillBounds,
+//                        contentDescription = "background"
+//                    )
                     NavHost(
                         navController = navController,
                         startDestination = Routes.InputData.route,

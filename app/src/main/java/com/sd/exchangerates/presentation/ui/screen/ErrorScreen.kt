@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sd.exchangerates.R
 import com.sd.exchangerates.presentation.ui.theme.ExchangeRatesTheme
+import com.sd.exchangerates.util.noActions
 
 @Composable
 fun ErrorScreen(onRetryClick: () -> Unit) {
@@ -42,6 +43,6 @@ fun ErrorScreen(onRetryClick: () -> Unit) {
 @Composable
 fun PreviewErrorScreen() {
     ExchangeRatesTheme {
-        ErrorScreen {}
+        ErrorScreen { noActions() }
     }
 }

@@ -1,5 +1,6 @@
 package com.sd.exchangerates.presentation.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,10 +38,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.sd.exchangerates.R
-import com.sd.exchangerates.presentation.ui.components.AddCurrency
+import com.sd.exchangerates.presentation.ui.components.AddBaseCurrency
+import com.sd.exchangerates.presentation.ui.components.AddResultCurrency
 import com.sd.exchangerates.presentation.ui.contract.RateEvent
 import com.sd.exchangerates.presentation.ui.contract.RateState
+import com.sd.exchangerates.presentation.viewmodel.MainViewModel
+import com.sd.exchangerates.util.noActions
+import com.sd.exchangerates.util.separate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +54,7 @@ fun InputDataScreen(
     state: RateState,
     onEvent: (RateEvent) -> Unit,
 ) {
-
+    val vm: MainViewModel = hiltViewModel()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -78,8 +84,9 @@ fun InputDataScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                Text(text = "Что меняем:", color = Color.White)
                 TextField(
-                    value = state.summaRub,
+                    value = state.baseAmount,
                     textStyle = TextStyle.Default.copy(
                         fontSize = 28.sp,
                         textAlign = TextAlign.Center
@@ -91,15 +98,17 @@ fun InputDataScreen(
                         .fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(onDone = {
+               //         vm.separateAmount()
+                        Log.d("MyLog", "click")
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     }),
                     placeholder = {
                         Text(text = stringResource(R.string.enter_sum), fontSize = 12.sp)
                     },
-                    isError = state.isErrorSumma,
+                    isError = state.isErrorAmount,
                     supportingText = {
-                        if (state.isErrorSumma) {
+                        if (state.isErrorAmount) {
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
                                 text = stringResource(R.string.enter_right_number),
@@ -108,11 +117,14 @@ fun InputDataScreen(
                         }
                     },
                     label = {
-                        Text(text = stringResource(R.string.amount_rub), color = Color.Gray)
+                        Text(text = stringResource(R.string.amount), color = Color.Gray)
+                    },
+                    suffix = {
+                        //            Text(text = state.baseCurrent)
                     },
                     singleLine = true,
                     leadingIcon = {
-                        if (state.isErrorSumma)
+                        if (state.isErrorAmount)
                             Icon(
                                 Icons.Default.Warning,
                                 "errorSumma",
@@ -128,25 +140,30 @@ fun InputDataScreen(
                     ),
                 )
 
+// BASE VALUTE
                 Row {
                     TextField(
-                        value = state.currency,
+                        //      value = state.baseValute.code,
+                        value = state.textBaseValute,
                         textStyle = TextStyle.Default.copy(
                             fontSize = 20.sp,
                             textAlign = TextAlign.Center
                         ),
-                        onValueChange = {},
+                        onValueChange = { newText ->
+                            onEvent(RateEvent.OnChangeTextBaseValute(newText))
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 20.dp),
-                        enabled = false,
+                            .padding(top = 8.dp),
+                        //       enabled = false,
+                        enabled = true,
                         readOnly = false,
                         placeholder = {
                             Text(text = stringResource(R.string.choose_currency), fontSize = 12.sp)
                         },
-                        isError = state.isErrorCurrency,
+                        isError = state.isErrorBaseCurrency,
                         supportingText = {
-                            if (state.isErrorCurrency) {
+                            if (state.isErrorBaseCurrency) {
                                 Text(
                                     modifier = Modifier.fillMaxWidth(),
                                     text = stringResource(R.string.choose_currency),
@@ -158,49 +175,153 @@ fun InputDataScreen(
                             Text(text = stringResource(R.string.currency), color = Color.Gray)
                         },
                         leadingIcon = {
-                            if (state.isErrorCurrency)
+                            if (state.isErrorBaseCurrency)
                                 Icon(
                                     Icons.Default.Warning,
-                                    "errorCurrency",
+                                    "errorBaseCurrency",
                                     tint = MaterialTheme.colorScheme.error
                                 )
                         },
+                        suffix = {
+                            Text(text = state.baseValute.code)
+                        },
                         trailingIcon = {
                             IconButton(onClick = {
-                                onEvent(RateEvent.OnChangeValuteMenuVisibility(Color.White, true))
+                                onEvent(
+                                    RateEvent.OnChangeBaseValuteMenuVisibility(
+                                        Color.White,
+                                        true
+                                    )
+                                )
                             })
                             {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.List,
-                                    contentDescription = "list"
+                                    contentDescription = "listBaseCurrencies"
                                 )
                             }
                         },
                         colors = TextFieldDefaults.colors(
                             disabledTextColor = Color.White,
-                            disabledContainerColor = state.focusColorCurrency,
+                            unfocusedContainerColor = state.focusColorBaseCurrency,
+                            unfocusedTextColor = Color.White,
+                    //        disabledContainerColor = state.focusColorBaseCurrency,
                             disabledTrailingIconColor = Color.Gray,
                         ),
                     )
-                    AddCurrency(
+                    AddBaseCurrency(
                         onEvent = onEvent,
                         state = state,
                     )
                 }
-                if (state.currency.isNotEmpty()) {
-                    Text(
-                        text = stringResource(
-                            R.string.rate_text,
-                            state.rate,
-                            state.baseCurrent,
-                            state.nominal,
-                            state.title
+
+// RESULT VALUTE
+                Text(
+                    modifier = Modifier.padding(top = 20.dp),
+                    text = "На что меняем:",
+                    color = Color.White
+                )
+                Row {
+                    TextField(
+                        //          value = state.resultValute.code,
+                        value = state.textResultValute,
+                        textStyle = TextStyle.Default.copy(
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center
                         ),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        onValueChange = { newText ->
+                            onEvent(RateEvent.OnChangeTextResultValute(newText))
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        //     .padding(top = 20.dp),
+                        enabled = true,
+                        readOnly = false,
+                        placeholder = {
+                            Text(text = stringResource(R.string.choose_currency), fontSize = 12.sp)
+                        },
+                        isError = state.isErrorResultCurrency,
+                        supportingText = {
+                            if (state.isErrorResultCurrency) {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = stringResource(R.string.choose_currency),
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        },
+                        label = {
+                            Text(text = stringResource(R.string.currency), color = Color.Gray)
+                        },
+                        leadingIcon = {
+                            if (state.isErrorResultCurrency)
+                                Icon(
+                                    Icons.Default.Warning,
+                                    "errorResultCurrency",
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                        },
+                        suffix = {
+                            Text(text = state.resultValute.code)
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = {
+                                onEvent(
+                                    RateEvent.OnChangeResultValuteMenuVisibility(
+                                        Color.White,
+                                        true
+                                    )
+                                )
+                            })
+                            {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.List,
+                                    contentDescription = "listResultCurrencies"
+                                )
+                            }
+                        },
+                        colors = TextFieldDefaults.colors(
+                            disabledTextColor = Color.White,
+                            unfocusedContainerColor = state.focusColorResultCurrency,
+                            unfocusedTextColor = Color.White,
+                     //       disabledContainerColor = state.focusColorResultCurrency,
+                            disabledTrailingIconColor = Color.Gray,
+                        ),
+                    )
+                    AddResultCurrency(
+                        onEvent = onEvent,
+                        state = state,
                     )
                 }
+
+                //       state.resultValute?.let{
+                Text(
+                    text = stringResource(
+                        R.string.rate_text,
+                        state.crossRate,
+                        state.baseValute.code,
+                        state.resultValute.nominal,
+                        state.resultValute.name
+                    ),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                )
+                //    }
+//                if (state.resultCodeCurrency.isNotEmpty()) {
+//                    Text(
+//                        text = stringResource(
+//                            R.string.rate_text,
+//                            state.baseRate,
+//                            state.resultCodeCurrency,
+//                            state.nominal,
+//                            state.title
+//                        ),
+//                        fontSize = 11.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        color = Color.White,
+//                    )
+//                }
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()

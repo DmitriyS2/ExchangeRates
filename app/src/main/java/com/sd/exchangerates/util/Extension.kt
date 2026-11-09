@@ -6,7 +6,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-fun Long.separate(): String = DecimalFormat().format(this).toString()
+fun Long.separate(): String = DecimalFormat("#,##0.##").format(this).toString()
 
 fun String.separate(): String {
     return try {
@@ -17,7 +17,7 @@ fun String.separate(): String {
     }
 }
 
-fun Double.separate(): String = DecimalFormat().format(this).toString()
+fun Double.separate(): String = DecimalFormat("#,##0.##").format(this).toString()
 
 fun String.toStringAsLocalDate(): String {
     return try {
