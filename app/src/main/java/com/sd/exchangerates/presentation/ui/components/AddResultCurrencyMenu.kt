@@ -9,7 +9,9 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -24,24 +26,30 @@ import com.sd.exchangerates.util.noActions
 fun AddResultCurrency(
     onEvent: (RateEvent) -> Unit,
     state: RateState,
+    keyboardController: SoftwareKeyboardController?,
+    focusManager: FocusManager?,
 ) {
-    DropdownMenu(
-        modifier = Modifier
-            .width(60.dp)
-            .heightIn(max = 200.dp),
-        expanded = state.isResultValuteMenuVisible,
-        offset = DpOffset((200).dp, (-10).dp),
-        properties = PopupProperties(focusable = false),
-        onDismissRequest = {
-            onEvent.invoke(RateEvent.OnChangeResultValuteMenuVisibility(Color.Black, false))
-        },
-    ) {
-        state.allResultCurrency.forEach { valute ->
-            DropdownMenuItem(text = {
-                Text(valute.code, textAlign = TextAlign.Center)
-            }, onClick = {
-                onEvent.invoke(RateEvent.OnChangeResultValute(valute, Color.Black))
-            })
+    if (state.allResultCurrency.isNotEmpty()) {
+        DropdownMenu(
+            modifier = Modifier
+                .width(60.dp)
+                .heightIn(max = 200.dp),
+            expanded = state.isResultValuteMenuVisible,
+            offset = DpOffset((200).dp, (-10).dp),
+            properties = PopupProperties(focusable = false),
+            onDismissRequest = {
+                onEvent.invoke(RateEvent.OnChangeResultValuteMenuVisibility(Color.Black, false))
+            },
+        ) {
+            state.allResultCurrency.forEach { valute ->
+                DropdownMenuItem(text = {
+                    Text(valute.code, textAlign = TextAlign.Center)
+                }, onClick = {
+                    onEvent.invoke(RateEvent.OnChangeResultValute(valute, Color.Black))
+                    keyboardController?.hide()
+                    focusManager?.clearFocus()
+                })
+            }
         }
     }
 }
@@ -56,7 +64,9 @@ fun PreviewAddResultCurrencyMenu() {
                 RateState(
                     isResultValuteMenuVisible = true,
                     allCurrency = listOf(Valute(code = "RUB"), Valute(code = "USD"))
-                )
+                ),
+                null,
+                null,
             )
         }
     }

@@ -58,6 +58,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.androidx.navigationevent)
     implementation(libs.dagger.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.room.runtime)

@@ -19,8 +19,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -33,20 +33,17 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.sd.exchangerates.R
 import com.sd.exchangerates.presentation.ui.components.AddBaseCurrency
 import com.sd.exchangerates.presentation.ui.components.AddResultCurrency
 import com.sd.exchangerates.presentation.ui.contract.RateEvent
 import com.sd.exchangerates.presentation.ui.contract.RateState
-import com.sd.exchangerates.presentation.viewmodel.MainViewModel
-import com.sd.exchangerates.util.noActions
-import com.sd.exchangerates.util.separate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +51,7 @@ fun InputDataScreen(
     state: RateState,
     onEvent: (RateEvent) -> Unit,
 ) {
-    val vm: MainViewModel = hiltViewModel()
+    //  val vm: MainViewModel = hiltViewModel()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -63,7 +60,8 @@ fun InputDataScreen(
             Text(text = stringResource(R.string.input_sum), fontSize = 24.sp)
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Black,
+            //    containerColor = Color.Black,
+            containerColor = Color.LightGray,
             scrolledContainerColor = Color.Black,
             navigationIconContentColor = Color.White,
             titleContentColor = Color.White,
@@ -85,7 +83,8 @@ fun InputDataScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(text = "Что меняем:", color = Color.White)
-                TextField(
+                //         TextField(
+                OutlinedTextField(
                     value = state.baseAmount,
                     textStyle = TextStyle.Default.copy(
                         fontSize = 28.sp,
@@ -98,7 +97,7 @@ fun InputDataScreen(
                         .fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(onDone = {
-               //         vm.separateAmount()
+                        //         vm.separateAmount()
                         Log.d("MyLog", "click")
                         keyboardController?.hide()
                         focusManager.clearFocus()
@@ -133,16 +132,19 @@ fun InputDataScreen(
                     },
                     colors = TextFieldDefaults.colors(
                         focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.White,
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.Black,
-                        errorCursorColor = Color.Red
+                        unfocusedTextColor = Color.Black,
+                        focusedContainerColor = Color.LightGray,
+                        //      unfocusedContainerColor = Color.Black,
+                        errorCursorColor = Color.Red,
+                        focusedLabelColor = Color.Red,
+                        unfocusedLabelColor = Color.Red
                     ),
                 )
 
 // BASE VALUTE
                 Row {
-                    TextField(
+                    //         TextField(
+                    OutlinedTextField(
                         //      value = state.baseValute.code,
                         value = state.textBaseValute,
                         textStyle = TextStyle.Default.copy(
@@ -161,6 +163,15 @@ fun InputDataScreen(
                         placeholder = {
                             Text(text = stringResource(R.string.choose_currency), fontSize = 12.sp)
                         },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(onDone = {
+                            //         vm.separateAmount()
+                            Log.d("MyLog", "click")
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                        }),
                         isError = state.isErrorBaseCurrency,
                         supportingText = {
                             if (state.isErrorBaseCurrency) {
@@ -203,15 +214,17 @@ fun InputDataScreen(
                         },
                         colors = TextFieldDefaults.colors(
                             disabledTextColor = Color.White,
-                            unfocusedContainerColor = state.focusColorBaseCurrency,
-                            unfocusedTextColor = Color.White,
-                    //        disabledContainerColor = state.focusColorBaseCurrency,
+                            //         unfocusedContainerColor = state.focusColorBaseCurrency,
+                            unfocusedTextColor = Color.LightGray,
+                            //        disabledContainerColor = state.focusColorBaseCurrency,
                             disabledTrailingIconColor = Color.Gray,
                         ),
                     )
                     AddBaseCurrency(
                         onEvent = onEvent,
                         state = state,
+                        keyboardController = keyboardController,
+                        focusManager = focusManager,
                     )
                 }
 
@@ -222,7 +235,8 @@ fun InputDataScreen(
                     color = Color.White
                 )
                 Row {
-                    TextField(
+                    //            TextField(
+                    OutlinedTextField(
                         //          value = state.resultValute.code,
                         value = state.textResultValute,
                         textStyle = TextStyle.Default.copy(
@@ -240,6 +254,15 @@ fun InputDataScreen(
                         placeholder = {
                             Text(text = stringResource(R.string.choose_currency), fontSize = 12.sp)
                         },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(onDone = {
+                            //         vm.separateAmount()
+                            Log.d("MyLog", "click")
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                        }),
                         isError = state.isErrorResultCurrency,
                         supportingText = {
                             if (state.isErrorResultCurrency) {
@@ -282,15 +305,17 @@ fun InputDataScreen(
                         },
                         colors = TextFieldDefaults.colors(
                             disabledTextColor = Color.White,
-                            unfocusedContainerColor = state.focusColorResultCurrency,
-                            unfocusedTextColor = Color.White,
-                     //       disabledContainerColor = state.focusColorResultCurrency,
+                            //        unfocusedContainerColor = state.focusColorResultCurrency,
+                            unfocusedTextColor = Color.LightGray,
+                            //       disabledContainerColor = state.focusColorResultCurrency,
                             disabledTrailingIconColor = Color.Gray,
                         ),
                     )
                     AddResultCurrency(
                         onEvent = onEvent,
                         state = state,
+                        keyboardController = keyboardController,
+                        focusManager = focusManager,
                     )
                 }
 

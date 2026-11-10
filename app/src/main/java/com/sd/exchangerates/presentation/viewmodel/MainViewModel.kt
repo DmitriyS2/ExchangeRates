@@ -13,6 +13,7 @@ import com.sd.exchangerates.presentation.ui.contract.RateState
 import com.sd.exchangerates.util.EMPTY
 import com.sd.exchangerates.util.separate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -63,8 +64,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getData() {
-        viewModelScope.launch {
+    private fun getData() {
+        viewModelScope.launch() {
             _state.update { it.copy(loading = true) }
             val rateResponse: RateResponse? = getResultSumCurrencyUseCase()
             rateResponse?.let {

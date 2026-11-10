@@ -18,6 +18,7 @@ retrofitVersion = "3.0.0"
 converterVersion = "3.0.0"
 loggingVersion = "5.5.0"
 room = "2.8.5"
+navigationEvent = "1.0.1"
 
 [libraries]
 hilt-android-gradle-plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hiltAndroidVersion" }
@@ -48,6 +49,7 @@ androidx-compose-material-icons-extended = { group = "androidx.compose.material"
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-navigationevent = { group = "androidx.navigationevent", name = "navigationevent", version.ref = "navigationEvent" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
