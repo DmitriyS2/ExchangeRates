@@ -23,4 +23,6 @@ sealed interface RateEvent {
 
     data class OnChangeTextBaseValute(val newText: String) : RateEvent
     data class OnChangeTextResultValute(val newText: String) : RateEvent
+
+    data object OnClickSwap: RateEvent
 }

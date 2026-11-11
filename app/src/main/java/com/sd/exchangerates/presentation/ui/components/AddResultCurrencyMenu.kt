@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,9 +28,11 @@ import com.sd.exchangerates.util.noActions
 fun AddResultCurrency(
     onEvent: (RateEvent) -> Unit,
     state: RateState,
-    keyboardController: SoftwareKeyboardController?,
-    focusManager: FocusManager?,
 ) {
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     if (state.allResultCurrency.isNotEmpty()) {
         DropdownMenu(
             modifier = Modifier
@@ -47,7 +51,7 @@ fun AddResultCurrency(
                 }, onClick = {
                     onEvent.invoke(RateEvent.OnChangeResultValute(valute, Color.Black))
                     keyboardController?.hide()
-                    focusManager?.clearFocus()
+                    focusManager.clearFocus()
                 })
             }
         }
@@ -65,8 +69,6 @@ fun PreviewAddResultCurrencyMenu() {
                     isResultValuteMenuVisible = true,
                     allCurrency = listOf(Valute(code = "RUB"), Valute(code = "USD"))
                 ),
-                null,
-                null,
             )
         }
     }

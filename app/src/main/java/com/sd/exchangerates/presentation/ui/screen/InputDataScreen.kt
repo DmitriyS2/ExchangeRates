@@ -1,6 +1,7 @@
 package com.sd.exchangerates.presentation.ui.screen
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,16 +13,19 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextFieldLabelPosition
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -79,10 +83,15 @@ fun InputDataScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 50.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
+        //        horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = "Что меняем:", color = Color.White)
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.End,
+                    text = "Что меняем:",
+                    color = Color.White
+                )
                 //         TextField(
                 OutlinedTextField(
                     value = state.baseAmount,
@@ -193,9 +202,9 @@ fun InputDataScreen(
                                     tint = MaterialTheme.colorScheme.error
                                 )
                         },
-                        suffix = {
-                            Text(text = state.baseValute.code)
-                        },
+//                        suffix = {
+//                            Text(text = state.baseValute.code)
+//                        },
                         trailingIcon = {
                             IconButton(onClick = {
                                 onEvent(
@@ -206,10 +215,11 @@ fun InputDataScreen(
                                 )
                             })
                             {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.List,
-                                    contentDescription = "listBaseCurrencies"
-                                )
+                                Text(text = state.baseValute.code)
+//                                Icon(
+//                                    imageVector = Icons.AutoMirrored.Filled.List,
+//                                    contentDescription = "listBaseCurrencies"
+//                                )
                             }
                         },
                         colors = TextFieldDefaults.colors(
@@ -223,14 +233,30 @@ fun InputDataScreen(
                     AddBaseCurrency(
                         onEvent = onEvent,
                         state = state,
-                        keyboardController = keyboardController,
-                        focusManager = focusManager,
+                    )
+                }
+
+                IconButton(
+                    modifier = Modifier.padding(top=8.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = Color.Yellow,
+                        contentColor = Color.Gray
+                    ),
+                    onClick = {
+                        onEvent(RateEvent.OnClickSwap)
+                    }) {
+                    Icon(
+                        imageVector = Icons.Default.SwapVert,
+                        contentDescription = "Поменять местами"
                     )
                 }
 
 // RESULT VALUTE
                 Text(
-                    modifier = Modifier.padding(top = 20.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
+                    textAlign = TextAlign.End,
                     text = "На что меняем:",
                     color = Color.White
                 )
@@ -284,9 +310,9 @@ fun InputDataScreen(
                                     tint = MaterialTheme.colorScheme.error
                                 )
                         },
-                        suffix = {
-                            Text(text = state.resultValute.code)
-                        },
+//                        suffix = {
+//                            Text(text = state.resultValute.code)
+//                        },
                         trailingIcon = {
                             IconButton(onClick = {
                                 onEvent(
@@ -297,10 +323,11 @@ fun InputDataScreen(
                                 )
                             })
                             {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.List,
-                                    contentDescription = "listResultCurrencies"
-                                )
+                                Text(text = state.resultValute.code)
+//                                Icon(
+//                                    imageVector = Icons.AutoMirrored.Filled.List,
+//                                    contentDescription = "listResultCurrencies"
+//                                )
                             }
                         },
                         colors = TextFieldDefaults.colors(
@@ -314,8 +341,6 @@ fun InputDataScreen(
                     AddResultCurrency(
                         onEvent = onEvent,
                         state = state,
-                        keyboardController = keyboardController,
-                        focusManager = focusManager,
                     )
                 }
 

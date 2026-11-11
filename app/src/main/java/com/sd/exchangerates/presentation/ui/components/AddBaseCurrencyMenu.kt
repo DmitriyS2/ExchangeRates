@@ -29,12 +29,9 @@ import com.sd.exchangerates.util.noActions
 fun AddBaseCurrency(
     onEvent: (RateEvent) -> Unit,
     state: RateState,
-    keyboardController: SoftwareKeyboardController?,
-    focusManager: FocusManager?,
-
     ) {
-//    val keyboardController = LocalSoftwareKeyboardController.current
-//    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     if (state.allBaseCurrency.isNotEmpty()) {
         DropdownMenu(
@@ -60,7 +57,7 @@ fun AddBaseCurrency(
                 }, onClick = {
                     onEvent.invoke(RateEvent.OnChangeBaseValute(valute, Color.Black))
                     keyboardController?.hide()
-                    focusManager?.clearFocus()
+                    focusManager.clearFocus()
                 })
             }
         }
@@ -78,8 +75,6 @@ fun PreviewAddBaseCurrencyMenu() {
                     isResultValuteMenuVisible = true,
                     allCurrency = listOf(Valute(code = "RUB"), Valute(code = "USD"))
                 ),
-                null,
-                null
             )
         }
     }

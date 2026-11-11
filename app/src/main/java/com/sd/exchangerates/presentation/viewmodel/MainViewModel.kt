@@ -61,6 +61,8 @@ class MainViewModel @Inject constructor(
 
             is RateEvent.OnChangeTextBaseValute -> setTextBaseValute(event.newText)
             is RateEvent.OnChangeTextResultValute -> setTextResultValute(event.newText)
+
+            RateEvent.OnClickSwap -> swap()
         }
     }
 
@@ -81,6 +83,13 @@ class MainViewModel @Inject constructor(
                 }
             } ?: _state.update { it.copy(loading = false, error = true) }
         }
+    }
+
+    private fun swap() {
+        val base = _state.value.baseValute
+        val result = _state.value.resultValute
+        val crossRate = (result.nominal * base.value) / result.value
+        _state.update { it.copy(baseValute = result, resultValute = base, crossRate = crossRate) }
     }
 
     private fun setTextBaseValute(text: String) {
