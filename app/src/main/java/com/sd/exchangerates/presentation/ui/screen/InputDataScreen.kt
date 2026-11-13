@@ -106,7 +106,7 @@ fun InputDataScreen(
                         .fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(onDone = {
-                        //         vm.separateAmount()
+                        //         TODO проверка и убрать error с поля
                         Log.d("MyLog", "click")
                         keyboardController?.hide()
                         focusManager.clearFocus()
@@ -125,7 +125,7 @@ fun InputDataScreen(
                         }
                     },
                     label = {
-                        Text(text = stringResource(R.string.amount), color = Color.Gray)
+                        Text(modifier = Modifier.background(Color.Transparent), text = stringResource(R.string.amount), color = Color.Gray)
                     },
                     suffix = {
                         //            Text(text = state.baseCurrent)

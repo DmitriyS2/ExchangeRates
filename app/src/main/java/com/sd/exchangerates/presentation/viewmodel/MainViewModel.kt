@@ -13,7 +13,6 @@ import com.sd.exchangerates.presentation.ui.contract.RateState
 import com.sd.exchangerates.util.EMPTY
 import com.sd.exchangerates.util.separate
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -67,7 +66,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun getData() {
-        viewModelScope.launch() {
+        viewModelScope.launch {
             _state.update { it.copy(loading = true) }
             val rateResponse: RateResponse? = getResultSumCurrencyUseCase()
             rateResponse?.let {
@@ -119,7 +118,7 @@ class MainViewModel @Inject constructor(
                     isErrorAmount = false,
                     //       isErrorBaseCurrency = isErrorBaseCurrency,
                     //       isErrorResultCurrency = isErrorResultCurrency,
-                    //   resultAmount = getOnlyTwoSignsInResult() // TODO можно здесь считать
+                       resultAmount = calculateResultAmount()
                 )
             }
             navigateToResult()
@@ -127,8 +126,9 @@ class MainViewModel @Inject constructor(
     }
 
     private fun setBaseAmount(value: String) {
-        val resultAmount = calculateResultAmount(baseAmount = value)
-        _state.update { it.copy(baseAmount = value, resultAmount = resultAmount) }
+   //     val resultAmount = calculateResultAmount(baseAmount = value)
+   //     _state.update { it.copy(baseAmount = value, resultAmount = resultAmount) }
+        _state.update { it.copy(baseAmount = value) }
     }
 
     fun separateAmount() {
@@ -146,13 +146,13 @@ class MainViewModel @Inject constructor(
     private fun setResultValute(valute: Valute, color: Color) {
         //       val crossRate = (_state.value.baseValute.value * _state.value.baseValute.nominal) / valute.value
         val crossRate = (_state.value.baseValute.nominal * valute.value) / _state.value.baseValute.value
-        val resultAmount = calculateResultAmount(resultValute = valute)
+     //   val resultAmount = calculateResultAmount(resultValute = valute)
 
         _state.update {
             it.copy(
                 resultValute = valute,
                 crossRate = crossRate,
-                resultAmount = resultAmount,
+            //    resultAmount = resultAmount,
                 //       resultCodeCurrency = valute.code,
                 //      resultRate = valute.value,
                 //      title = valute.name,
@@ -167,13 +167,13 @@ class MainViewModel @Inject constructor(
     private fun setBaseValute(valute: Valute, color: Color) {
         //    val crossRate = (valute.value * valute.nominal) / _state.value.resultValute.value
         val crossRate = (valute.nominal * _state.value.resultValute.value) / valute.value
-        val resultAmount = calculateResultAmount(baseValute = valute)
+     //   val resultAmount = calculateResultAmount(baseValute = valute)
 
         _state.update {
             it.copy(
                 baseValute = valute,
                 crossRate = crossRate,
-                resultAmount = resultAmount,
+        //        resultAmount = resultAmount,
                 //      baseCodeCurrency = valute.code,
                 //      baseRate = valute.value,
                 //      title = valute.name,
@@ -195,23 +195,7 @@ class MainViewModel @Inject constructor(
         baseAmount: String = _state.value.baseAmount
     ): String {
         return try {
-            //    with(_state.value) {
-            Log.d(
-                "MyLog",
-                "baseAmount=${baseAmount.toInt()}, resNominal=${resultValute.nominal}, resRate=${resultValute.value}, baseNom=${baseValute.nominal}, baseRate=${baseValute.value}"
-            )
-            Log.d("MyLog", "1=${baseAmount.toInt() * resultValute.nominal * baseValute.value}")
-            Log.d("MyLog", "2=${resultValute.value * baseValute.nominal}")
-            Log.d(
-                "MyLog",
-                "3=${(baseAmount.toInt() * resultValute.nominal * baseValute.value) / (resultValute.value * baseValute.nominal)}"
-            )
-            Log.d(
-                "MyLog",
-                "4=${((baseAmount.toInt() * resultValute.nominal * baseValute.value) / (resultValute.value * baseValute.nominal)).separate()}"
-            )
             ((baseAmount.toInt() * resultValute.nominal * baseValute.value) / (resultValute.value * baseValute.nominal)).separate()
-            //     }
         } catch (_: Exception) {
             EMPTY
         }
