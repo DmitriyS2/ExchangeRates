@@ -6,14 +6,14 @@ import com.sd.exchangerates.util.BASE_STRING
 import com.sd.exchangerates.util.toStringAsLocalDate
 
 data class RateResponse(
-    val date: String = BASE_STRING,
+ //   val date: String = BASE_STRING,
     val valutes: List<Valute> = emptyList()
 )
 
 fun Rate?.toRateResponse(): RateResponse? {
     return this?.let {
         RateResponse(
-            date = date.toStringAsLocalDate(),
+        //    date = date.toStringAsLocalDate(),
             valutes = valute.map { it.value }
         )
     }

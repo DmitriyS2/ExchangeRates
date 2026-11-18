@@ -1,7 +1,7 @@
 package com.sd.exchangerates.di
 
-import com.sd.exchangerates.domain.usecase.GetResultSumCurrencyUseCase
-import com.sd.exchangerates.domain.usecase.GetResultSumCurrencyUseCaseImpl
+import com.sd.exchangerates.domain.usecase.GetAllCurrenciesUseCase
+import com.sd.exchangerates.domain.usecase.GetAllCurrenciesUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,5 +13,5 @@ import javax.inject.Singleton
 interface UseCaseModule {
     @Binds
     @Singleton
-    fun bindsUseCase(impl: GetResultSumCurrencyUseCaseImpl): GetResultSumCurrencyUseCase
+    fun bindsUseCase(impl: GetAllCurrenciesUseCaseImpl): GetAllCurrenciesUseCase
 }

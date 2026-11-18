@@ -6,7 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sd.exchangerates.domain.dto.Valute
 import com.sd.exchangerates.domain.model.RateResponse
-import com.sd.exchangerates.domain.usecase.GetResultSumCurrencyUseCase
+import com.sd.exchangerates.domain.repository.DataStorageRepository
+import com.sd.exchangerates.domain.usecase.GetAllCurrenciesUseCase
 import com.sd.exchangerates.presentation.ui.contract.RateEffect
 import com.sd.exchangerates.presentation.ui.contract.RateEvent
 import com.sd.exchangerates.presentation.ui.contract.RateState
@@ -19,13 +20,15 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getResultSumCurrencyUseCase: GetResultSumCurrencyUseCase
+    private val getAllCurrenciesUseCase: GetAllCurrenciesUseCase,
+    private val dataStorageRepository: DataStorageRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RateState())
@@ -68,7 +71,12 @@ class MainViewModel @Inject constructor(
     private fun getData() {
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
-            val rateResponse: RateResponse? = getResultSumCurrencyUseCase()
+            val rateResponse: RateResponse? = getAllCurrenciesUseCase()
+            val date = dataStorageRepository.dateResponseFromBE.first()
+            val dateRequest = dataStorageRepository.createRequestToBE.first()
+            Log.d("MyLog", "dateResp=$date")
+            Log.d("MyLog", "dateRequest=$dateRequest")
+
             rateResponse?.let {
                 _state.update {
                     it.copy(
@@ -77,7 +85,7 @@ class MainViewModel @Inject constructor(
                         allCurrency = rateResponse.valutes,
                         allBaseCurrency = rateResponse.valutes,
                         allResultCurrency = rateResponse.valutes,
-                        date = rateResponse.date
+                        date = date
                     )
                 }
             } ?: _state.update { it.copy(loading = false, error = true) }

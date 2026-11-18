@@ -30,3 +30,5 @@ fun String.toStringAsLocalDate(): String {
 
 private val FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.ROOT)
 fun String.toDate(): LocalDate = LocalDate.parse(this, FMT)
+
+fun LocalDate.toFormattedString(): String = this.format(FMT)
