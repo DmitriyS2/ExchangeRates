@@ -10,11 +10,9 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -42,7 +40,7 @@ fun AddBaseCurrency(
             offset = DpOffset((200).dp, (-10).dp),
             properties = PopupProperties(focusable = false),
             onDismissRequest = {
-                onEvent.invoke(RateEvent.OnChangeBaseValuteMenuVisibility(Color.Black, false))
+                onEvent.invoke(RateEvent.OnChangeBaseValuteMenuVisibility(false))
             },
 //        scrollState = TODO(),
 //        shape = TODO(),
@@ -55,7 +53,7 @@ fun AddBaseCurrency(
                 DropdownMenuItem(text = {
                     Text(valute.code, textAlign = TextAlign.Center)
                 }, onClick = {
-                    onEvent.invoke(RateEvent.OnChangeBaseValute(valute, Color.Black))
+                    onEvent.invoke(RateEvent.OnChangeBaseValute(valute))
                     keyboardController?.hide()
                     focusManager.clearFocus()
                 })

@@ -3,7 +3,6 @@ package com.sd.exchangerates.presentation.ui.features
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.sd.exchangerates.presentation.ui.Routes

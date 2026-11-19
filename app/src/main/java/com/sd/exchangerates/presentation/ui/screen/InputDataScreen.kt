@@ -1,6 +1,5 @@
 package com.sd.exchangerates.presentation.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
@@ -25,11 +23,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TextFieldLabelPosition
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -55,7 +51,7 @@ fun InputDataScreen(
     state: RateState,
     onEvent: (RateEvent) -> Unit,
 ) {
-    //  val vm: MainViewModel = hiltViewModel()
+
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -64,9 +60,8 @@ fun InputDataScreen(
             Text(text = stringResource(R.string.input_sum), fontSize = 24.sp)
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            //    containerColor = Color.Black,
             containerColor = Color.LightGray,
-            scrolledContainerColor = Color.Black,
+            scrolledContainerColor = Color.White,
             navigationIconContentColor = Color.White,
             titleContentColor = Color.White,
             actionIconContentColor = Color.White
@@ -83,16 +78,14 @@ fun InputDataScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 50.dp),
-        //        horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.End,
-                    text = "Что меняем:",
+                    text = stringResource(R.string.from),
                     color = Color.White
                 )
-                //         TextField(
                 OutlinedTextField(
                     value = state.baseAmount,
                     textStyle = TextStyle.Default.copy(
@@ -106,8 +99,7 @@ fun InputDataScreen(
                         .fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(onDone = {
-                        //         TODO проверка и убрать error с поля
-                        Log.d("MyLog", "click")
+                        onEvent(RateEvent.OnClickDoneKeyboard)
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     }),
@@ -125,10 +117,11 @@ fun InputDataScreen(
                         }
                     },
                     label = {
-                        Text(modifier = Modifier.background(Color.Transparent), text = stringResource(R.string.amount), color = Color.Gray)
-                    },
-                    suffix = {
-                        //            Text(text = state.baseCurrent)
+                        Text(
+                            modifier = Modifier.background(Color.Transparent),
+                            text = stringResource(R.string.amount),
+                            color = Color.Gray
+                        )
                     },
                     singleLine = true,
                     leadingIcon = {
@@ -142,8 +135,8 @@ fun InputDataScreen(
                     colors = TextFieldDefaults.colors(
                         focusedTextColor = Color.Black,
                         unfocusedTextColor = Color.Black,
-                        focusedContainerColor = Color.LightGray,
-                        //      unfocusedContainerColor = Color.Black,
+                   //     focusedContainerColor = Color.LightGray,
+                        unfocusedContainerColor = Color.LightGray,
                         errorCursorColor = Color.Red,
                         focusedLabelColor = Color.Red,
                         unfocusedLabelColor = Color.Red
@@ -152,9 +145,7 @@ fun InputDataScreen(
 
 // BASE VALUTE
                 Row {
-                    //         TextField(
                     OutlinedTextField(
-                        //      value = state.baseValute.code,
                         value = state.textBaseValute,
                         textStyle = TextStyle.Default.copy(
                             fontSize = 20.sp,
@@ -166,7 +157,6 @@ fun InputDataScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp),
-                        //       enabled = false,
                         enabled = true,
                         readOnly = false,
                         placeholder = {
@@ -176,57 +166,24 @@ fun InputDataScreen(
                             imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(onDone = {
-                            //         vm.separateAmount()
-                            Log.d("MyLog", "click")
                             keyboardController?.hide()
                             focusManager.clearFocus()
                         }),
-                        isError = state.isErrorBaseCurrency,
-                        supportingText = {
-                            if (state.isErrorBaseCurrency) {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = stringResource(R.string.choose_currency),
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        },
                         label = {
                             Text(text = stringResource(R.string.currency), color = Color.Gray)
                         },
-                        leadingIcon = {
-                            if (state.isErrorBaseCurrency)
-                                Icon(
-                                    Icons.Default.Warning,
-                                    "errorBaseCurrency",
-                                    tint = MaterialTheme.colorScheme.error
-                                )
-                        },
-//                        suffix = {
-//                            Text(text = state.baseValute.code)
-//                        },
                         trailingIcon = {
                             IconButton(onClick = {
-                                onEvent(
-                                    RateEvent.OnChangeBaseValuteMenuVisibility(
-                                        Color.White,
-                                        true
-                                    )
-                                )
+                                onEvent(RateEvent.OnChangeBaseValuteMenuVisibility(true))
                             })
                             {
                                 Text(text = state.baseValute.code)
-//                                Icon(
-//                                    imageVector = Icons.AutoMirrored.Filled.List,
-//                                    contentDescription = "listBaseCurrencies"
-//                                )
                             }
                         },
                         colors = TextFieldDefaults.colors(
                             disabledTextColor = Color.White,
-                            //         unfocusedContainerColor = state.focusColorBaseCurrency,
                             unfocusedTextColor = Color.LightGray,
-                            //        disabledContainerColor = state.focusColorBaseCurrency,
+                            unfocusedContainerColor = Color.LightGray,
                             disabledTrailingIconColor = Color.Gray,
                         ),
                     )
@@ -237,7 +194,7 @@ fun InputDataScreen(
                 }
 
                 IconButton(
-                    modifier = Modifier.padding(top=8.dp),
+                    modifier = Modifier.padding(top = 8.dp),
                     colors = IconButtonDefaults.iconButtonColors(
                         containerColor = Color.Yellow,
                         contentColor = Color.Gray
@@ -247,7 +204,7 @@ fun InputDataScreen(
                     }) {
                     Icon(
                         imageVector = Icons.Default.SwapVert,
-                        contentDescription = "Поменять местами"
+                        contentDescription = "swap"
                     )
                 }
 
@@ -257,13 +214,11 @@ fun InputDataScreen(
                         .fillMaxWidth()
                         .padding(top = 20.dp),
                     textAlign = TextAlign.End,
-                    text = "На что меняем:",
+                    text = stringResource(R.string.to),
                     color = Color.White
                 )
                 Row {
-                    //            TextField(
                     OutlinedTextField(
-                        //          value = state.resultValute.code,
                         value = state.textResultValute,
                         textStyle = TextStyle.Default.copy(
                             fontSize = 20.sp,
@@ -272,9 +227,7 @@ fun InputDataScreen(
                         onValueChange = { newText ->
                             onEvent(RateEvent.OnChangeTextResultValute(newText))
                         },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        //     .padding(top = 20.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         enabled = true,
                         readOnly = false,
                         placeholder = {
@@ -284,57 +237,24 @@ fun InputDataScreen(
                             imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(onDone = {
-                            //         vm.separateAmount()
-                            Log.d("MyLog", "click")
                             keyboardController?.hide()
                             focusManager.clearFocus()
                         }),
-                        isError = state.isErrorResultCurrency,
-                        supportingText = {
-                            if (state.isErrorResultCurrency) {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = stringResource(R.string.choose_currency),
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        },
                         label = {
                             Text(text = stringResource(R.string.currency), color = Color.Gray)
                         },
-                        leadingIcon = {
-                            if (state.isErrorResultCurrency)
-                                Icon(
-                                    Icons.Default.Warning,
-                                    "errorResultCurrency",
-                                    tint = MaterialTheme.colorScheme.error
-                                )
-                        },
-//                        suffix = {
-//                            Text(text = state.resultValute.code)
-//                        },
                         trailingIcon = {
                             IconButton(onClick = {
-                                onEvent(
-                                    RateEvent.OnChangeResultValuteMenuVisibility(
-                                        Color.White,
-                                        true
-                                    )
-                                )
+                                onEvent(RateEvent.OnChangeResultValuteMenuVisibility(true))
                             })
                             {
                                 Text(text = state.resultValute.code)
-//                                Icon(
-//                                    imageVector = Icons.AutoMirrored.Filled.List,
-//                                    contentDescription = "listResultCurrencies"
-//                                )
                             }
                         },
                         colors = TextFieldDefaults.colors(
                             disabledTextColor = Color.White,
-                            //        unfocusedContainerColor = state.focusColorResultCurrency,
                             unfocusedTextColor = Color.LightGray,
-                            //       disabledContainerColor = state.focusColorResultCurrency,
+                            unfocusedContainerColor = Color.LightGray,
                             disabledTrailingIconColor = Color.Gray,
                         ),
                     )
@@ -344,7 +264,6 @@ fun InputDataScreen(
                     )
                 }
 
-                //       state.resultValute?.let{
                 Text(
                     text = stringResource(
                         R.string.rate_text,
@@ -357,21 +276,7 @@ fun InputDataScreen(
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                 )
-                //    }
-//                if (state.resultCodeCurrency.isNotEmpty()) {
-//                    Text(
-//                        text = stringResource(
-//                            R.string.rate_text,
-//                            state.baseRate,
-//                            state.resultCodeCurrency,
-//                            state.nominal,
-//                            state.title
-//                        ),
-//                        fontSize = 11.sp,
-//                        fontWeight = FontWeight.Bold,
-//                        color = Color.White,
-//                    )
-//                }
+
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()

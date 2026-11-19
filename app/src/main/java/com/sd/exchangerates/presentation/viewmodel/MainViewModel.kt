@@ -1,7 +1,6 @@
 package com.sd.exchangerates.presentation.viewmodel
 
 import android.util.Log
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sd.exchangerates.domain.dto.Valute
@@ -44,27 +43,25 @@ class MainViewModel @Inject constructor(
     fun handleEvent(event: RateEvent) {
         when (event) {
             RateEvent.OnRetryClick -> getData()
+
             is RateEvent.OnChangeSumma -> setBaseAmount(event.newSumma)
-            is RateEvent.OnChangeResultValuteMenuVisibility -> changeResultMenuVisibility(
-                event.color,
-                event.isVisible
-            )
 
-            is RateEvent.OnChangeResultValute -> setResultValute(event.valute, event.color)
+            is RateEvent.OnChangeResultValuteMenuVisibility -> changeResultMenuVisibility(event.isVisible)
+            is RateEvent.OnChangeResultValute -> setResultValute(event.valute)
 
-            is RateEvent.OnChangeBaseValuteMenuVisibility -> changeBaseMenuVisibility(
-                event.color,
-                event.isVisible
-            )
+            is RateEvent.OnChangeBaseValuteMenuVisibility -> changeBaseMenuVisibility(event.isVisible)
+            is RateEvent.OnChangeBaseValute -> setBaseValute(event.valute)
 
-            is RateEvent.OnChangeBaseValute -> setBaseValute(event.valute, event.color)
             RateEvent.OnClickButtonChange -> onClickChange()
+
             RateEvent.OnClickBackFromResult -> navigateToInputData()
 
             is RateEvent.OnChangeTextBaseValute -> setTextBaseValute(event.newText)
             is RateEvent.OnChangeTextResultValute -> setTextResultValute(event.newText)
 
             RateEvent.OnClickSwap -> swap()
+
+            RateEvent.OnClickDoneKeyboard -> checkAmount()
         }
     }
 
@@ -92,6 +89,10 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private fun checkAmount() {
+        _state.update { it.copy(isErrorAmount = isErrorNumber(_state.value.baseAmount)) }
+    }
+
     private fun swap() {
         val base = _state.value.baseValute
         val result = _state.value.resultValute
@@ -101,32 +102,40 @@ class MainViewModel @Inject constructor(
 
     private fun setTextBaseValute(text: String) {
         val baseValutes: List<Valute> = _state.value.allCurrency.filter {
-            it.code.lowercase().contains(text.lowercase()) || it.name.lowercase().contains(text.lowercase())
+            it.code.lowercase().contains(text.lowercase()) || it.name.lowercase()
+                .contains(text.lowercase())
         }
-        _state.update { it.copy(allBaseCurrency = baseValutes, textBaseValute = text, isBaseValuteMenuVisible = true, focusColorBaseCurrency = Color.White) }
+        _state.update {
+            it.copy(
+                allBaseCurrency = baseValutes,
+                textBaseValute = text,
+                isBaseValuteMenuVisible = true,
+            )
+        }
     }
 
     private fun setTextResultValute(text: String) {
         val resultValutes: List<Valute> = _state.value.allCurrency.filter {
-            it.code.lowercase().contains(text.lowercase()) || it.name.lowercase().contains(text.lowercase())
+            it.code.lowercase().contains(text.lowercase()) || it.name.lowercase()
+                .contains(text.lowercase())
         }
-        _state.update { it.copy(allResultCurrency = resultValutes, textResultValute = text, isResultValuteMenuVisible = true, focusColorResultCurrency = Color.White) }
+        _state.update {
+            it.copy(
+                allResultCurrency = resultValutes,
+                textResultValute = text,
+                isResultValuteMenuVisible = true,
+            )
+        }
     }
 
     private fun onClickChange() {
-        //    val isErrorBaseAmount = isErrorNumber(state.value.baseAmount)
-        //   val isErrorBaseCurrency = state.value.baseValute.code == BASE_STRING
-        //    val isErrorResultCurrency = state.value.resultValute?.code == BASE_STRING
-
-        if (isErrorNumber(state.value.baseAmount)) {
+        if (isErrorNumber(_state.value.baseAmount)) {
             _state.update { it.copy(isErrorAmount = true) }
         } else {
             _state.update {
                 it.copy(
                     isErrorAmount = false,
-                    //       isErrorBaseCurrency = isErrorBaseCurrency,
-                    //       isErrorResultCurrency = isErrorResultCurrency,
-                       resultAmount = calculateResultAmount()
+                    resultAmount = calculateResultAmount()
                 )
             }
             navigateToResult()
@@ -134,67 +143,32 @@ class MainViewModel @Inject constructor(
     }
 
     private fun setBaseAmount(value: String) {
-   //     val resultAmount = calculateResultAmount(baseAmount = value)
-   //     _state.update { it.copy(baseAmount = value, resultAmount = resultAmount) }
         _state.update { it.copy(baseAmount = value) }
     }
 
-    fun separateAmount() {
-        _state.update { it.copy(baseAmount = it.baseAmount.separate()) }
-    }
-//
-//    private fun getOnlyTwoSignsInResult(): String {
-//        return try {
-//            (((((state.value.baseAmount.toLong() * state.value.resultValute.nominal) / state.value.baseValute.value) * 100).toLong()) / 100.0).separate()
-//        } catch (_: Exception) {
-//            EMPTY
-//        }
-//    }
-
-    private fun setResultValute(valute: Valute, color: Color) {
-        //       val crossRate = (_state.value.baseValute.value * _state.value.baseValute.nominal) / valute.value
-        val crossRate = (_state.value.baseValute.nominal * valute.value) / _state.value.baseValute.value
-     //   val resultAmount = calculateResultAmount(resultValute = valute)
+    private fun setResultValute(valute: Valute) {
+        val crossRate =
+            (_state.value.baseValute.nominal * valute.value) / _state.value.baseValute.value
 
         _state.update {
             it.copy(
                 resultValute = valute,
                 crossRate = crossRate,
-            //    resultAmount = resultAmount,
-                //       resultCodeCurrency = valute.code,
-                //      resultRate = valute.value,
-                //      title = valute.name,
-                //      nominal = valute.nominal,
-                //    isErrorResultCurrency = false,
                 isResultValuteMenuVisible = false,
-                focusColorResultCurrency = color,
             )
         }
     }
 
-    private fun setBaseValute(valute: Valute, color: Color) {
-        //    val crossRate = (valute.value * valute.nominal) / _state.value.resultValute.value
+    private fun setBaseValute(valute: Valute) {
         val crossRate = (valute.nominal * _state.value.resultValute.value) / valute.value
-     //   val resultAmount = calculateResultAmount(baseValute = valute)
 
         _state.update {
             it.copy(
                 baseValute = valute,
                 crossRate = crossRate,
-        //        resultAmount = resultAmount,
-                //      baseCodeCurrency = valute.code,
-                //      baseRate = valute.value,
-                //      title = valute.name,
-                //       nominal = valute.nominal,
-                //    isErrorBaseCurrency = false,
                 isBaseValuteMenuVisible = false,
-                focusColorBaseCurrency = color,
             )
         }
-    }
-
-    private fun calculateCrossRate(): Double {
-        return (_state.value.baseValute.value * _state.value.baseValute.nominal) / _state.value.resultValute.value
     }
 
     private fun calculateResultAmount(
@@ -209,41 +183,15 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun calculateResultAmount(crossRate: Double): String {
-        Log.d(
-            "MyLog",
-            "baseAmount=${_state.value.baseAmount}, ResNominal=${_state.value.resultValute.nominal}, crossRate=${crossRate}"
-        )
-        return try {
-            val res =
-                ((_state.value.baseAmount.toInt() * _state.value.resultValute.nominal) / crossRate).separate()
-            Log.d("MyLog", "res1=$res")
-            res
-        } catch (_: Exception) {
-            Log.d("MyLog", "res2=")
-            EMPTY
-        }
+    private fun changeBaseMenuVisibility(isVisible: Boolean) {
+        _state.update { it.copy(isBaseValuteMenuVisible = isVisible) }
     }
 
-    private fun changeBaseMenuVisibility(color: Color, isVisible: Boolean) {
-        _state.update {
-            it.copy(
-                focusColorBaseCurrency = color,
-                isBaseValuteMenuVisible = isVisible
-            )
-        }
+    private fun changeResultMenuVisibility(isVisible: Boolean) {
+        _state.update { it.copy(isResultValuteMenuVisible = isVisible) }
     }
 
-    private fun changeResultMenuVisibility(color: Color, isVisible: Boolean) {
-        _state.update {
-            it.copy(
-                focusColorResultCurrency = color,
-                isResultValuteMenuVisible = isVisible
-            )
-        }
-    }
-
-    fun isErrorNumber(text: String): Boolean {
+    private fun isErrorNumber(text: String): Boolean {
         var flag = false
         if (text.isEmpty()) {
             flag = true

@@ -1,5 +1,6 @@
 package com.sd.exchangerates.presentation.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
@@ -9,11 +10,9 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -42,14 +41,15 @@ fun AddResultCurrency(
             offset = DpOffset((200).dp, (-10).dp),
             properties = PopupProperties(focusable = false),
             onDismissRequest = {
-                onEvent.invoke(RateEvent.OnChangeResultValuteMenuVisibility(Color.Black, false))
+                onEvent.invoke(RateEvent.OnChangeResultValuteMenuVisibility(false))
             },
+            border = BorderStroke(width = 2.dp, color = Color.Black)//TODO(),
         ) {
             state.allResultCurrency.forEach { valute ->
                 DropdownMenuItem(text = {
                     Text(valute.code, textAlign = TextAlign.Center)
                 }, onClick = {
-                    onEvent.invoke(RateEvent.OnChangeResultValute(valute, Color.Black))
+                    onEvent.invoke(RateEvent.OnChangeResultValute(valute))
                     keyboardController?.hide()
                     focusManager.clearFocus()
                 })

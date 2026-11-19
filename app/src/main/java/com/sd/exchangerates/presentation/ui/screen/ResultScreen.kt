@@ -44,8 +44,8 @@ fun ResultScreen(
             Text(text = stringResource(R.string.result))
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Black,
-            scrolledContainerColor = Color.Black,
+            containerColor = Color.LightGray,
+            scrolledContainerColor = Color.LightGray,
             navigationIconContentColor = Color.White,
             titleContentColor = Color.White,
             actionIconContentColor = Color.White

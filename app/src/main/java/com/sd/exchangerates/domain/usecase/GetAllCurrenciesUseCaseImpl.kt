@@ -5,7 +5,6 @@ import com.sd.exchangerates.domain.model.toRateResponse
 import com.sd.exchangerates.domain.repository.DataStorageRepository
 import com.sd.exchangerates.domain.repository.DatabaseRepository
 import com.sd.exchangerates.domain.repository.NetworkRepository
-import com.sd.exchangerates.util.noActions
 import com.sd.exchangerates.util.toDate
 import com.sd.exchangerates.util.toFormattedString
 import com.sd.exchangerates.util.toStringAsLocalDate
@@ -24,33 +23,20 @@ class GetAllCurrenciesUseCaseImpl @Inject constructor(
         val createRequest = dataStorageRepository.createRequestToBE.first()
         val currentDate = LocalDate.now()
         return when {
-            createRequest.isEmpty() -> {
-                dataStorageRepository.setCreateRequest(currentDate.toFormattedString())
-                updateValuteInDb()
-            }
+            createRequest.isEmpty() -> updateValuteInDb()
 
             createRequest.toStringAsLocalDate().toDate() == currentDate -> {
                 valuteFromDB?.toRateResponse() ?: updateValuteInDb()
             }
 
-            createRequest.toStringAsLocalDate().toDate() < currentDate -> {
-                updateValuteInDb()
-            }
+            createRequest.toStringAsLocalDate().toDate() < currentDate -> updateValuteInDb()
 
             else -> null
         }
-
-//        return valuteFromDB?.let {
-//            if (it.date.toStringAsLocalDate().toDate() < currentDate) {
-//                updateValuteInDb()
-//            } else {
-//                it.toRateResponse()
-//            }
-//        } ?: updateValuteInDb()
     }
 
     private suspend fun updateValuteInDb(): RateResponse? {
-        val valuteFromNetwork = networkRepository.getResultSumCurrency()
+        val valuteFromNetwork = networkRepository.getCurrenciesFromBE()
         valuteFromNetwork?.let { databaseRepository.insertValutes(valuteFromNetwork) }
         return valuteFromNetwork.toRateResponse()
     }

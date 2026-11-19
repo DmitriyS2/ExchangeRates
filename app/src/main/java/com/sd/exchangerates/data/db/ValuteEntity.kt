@@ -16,7 +16,6 @@ data class ValuteEntity(
     val name: String = BASE_STRING,
     val value: Double = BASE_DOUBLE,
     val previousValue: Double = BASE_DOUBLE,
- //   val date: String = BASE_STRING,
 )
 
 fun ValuteEntity.toValute(): Valute {
@@ -38,6 +37,5 @@ fun Valute.toEntity(): ValuteEntity {
         name = name,
         value = value,
         previousValue = previousValue,
-     //   date = date,
     )
 }
