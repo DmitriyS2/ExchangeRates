@@ -40,8 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sd.exchangerates.R
-import com.sd.exchangerates.presentation.ui.components.AddBaseCurrency
-import com.sd.exchangerates.presentation.ui.components.AddResultCurrency
+import com.sd.exchangerates.presentation.ui.components.AddCurrencyMenu
 import com.sd.exchangerates.presentation.ui.contract.RateEvent
 import com.sd.exchangerates.presentation.ui.contract.RateState
 
@@ -135,7 +134,7 @@ fun InputDataScreen(
                     colors = TextFieldDefaults.colors(
                         focusedTextColor = Color.Black,
                         unfocusedTextColor = Color.Black,
-                   //     focusedContainerColor = Color.LightGray,
+                        //     focusedContainerColor = Color.LightGray,
                         unfocusedContainerColor = Color.LightGray,
                         errorCursorColor = Color.Red,
                         focusedLabelColor = Color.Red,
@@ -174,7 +173,12 @@ fun InputDataScreen(
                         },
                         trailingIcon = {
                             IconButton(onClick = {
-                                onEvent(RateEvent.OnChangeBaseValuteMenuVisibility(true))
+                                onEvent(
+                                    RateEvent.OnChangeBaseValuteMenuVisibility(
+                                        isVisible = true,
+                                        cleanEditText = true
+                                    )
+                                )
                             })
                             {
                                 Text(text = state.baseValute.code)
@@ -187,10 +191,24 @@ fun InputDataScreen(
                             disabledTrailingIconColor = Color.Gray,
                         ),
                     )
-                    AddBaseCurrency(
-                        onEvent = onEvent,
-                        state = state,
+                    AddCurrencyMenu(
+                        expanded = state.isBaseValuteMenuVisible,
+                        currencies = state.allBaseCurrency,
+                        onDismissRequest = {
+                            onEvent.invoke(
+                                RateEvent.OnChangeBaseValuteMenuVisibility(
+                                    false
+                                )
+                            )
+                        },
+                        onClickCurrency = { valute ->
+                            onEvent.invoke(RateEvent.OnChangeBaseValute(valute))
+                        }
                     )
+//                    AddBaseCurrency(
+//                        onEvent = onEvent,
+//                        state = state,
+//                    )
                 }
 
                 IconButton(
@@ -245,7 +263,12 @@ fun InputDataScreen(
                         },
                         trailingIcon = {
                             IconButton(onClick = {
-                                onEvent(RateEvent.OnChangeResultValuteMenuVisibility(true))
+                                onEvent(
+                                    RateEvent.OnChangeResultValuteMenuVisibility(
+                                        isVisible = true,
+                                        cleanEditText = true
+                                    )
+                                )
                             })
                             {
                                 Text(text = state.resultValute.code)
@@ -258,10 +281,24 @@ fun InputDataScreen(
                             disabledTrailingIconColor = Color.Gray,
                         ),
                     )
-                    AddResultCurrency(
-                        onEvent = onEvent,
-                        state = state,
+                    AddCurrencyMenu(
+                        expanded = state.isResultValuteMenuVisible,
+                        currencies = state.allResultCurrency,
+                        onDismissRequest = {
+                            onEvent.invoke(
+                                RateEvent.OnChangeResultValuteMenuVisibility(
+                                    false
+                                )
+                            )
+                        },
+                        onClickCurrency = { valute ->
+                            onEvent.invoke(RateEvent.OnChangeResultValute(valute))
+                        }
                     )
+//                    AddResultCurrency(
+//                        onEvent = onEvent,
+//                        state = state,
+//                    )
                 }
 
                 Text(

@@ -8,13 +8,21 @@ sealed interface RateEvent {
     data object OnRetryClick : RateEvent
     data class OnChangeSumma(val newSumma: String) : RateEvent
 
-    data class OnChangeResultValuteMenuVisibility(val isVisible: Boolean) :
+    data class OnChangeResultValuteMenuVisibility(
+        val isVisible: Boolean,
+        val cleanEditText: Boolean = false
+    ) :
         RateEvent
+
     data class OnChangeResultValute(val valute: Valute) : RateEvent
 
 
-    data class OnChangeBaseValuteMenuVisibility(val isVisible: Boolean) :
+    data class OnChangeBaseValuteMenuVisibility(
+        val isVisible: Boolean,
+        val cleanEditText: Boolean = false
+    ) :
         RateEvent
+
     data class OnChangeBaseValute(val valute: Valute) : RateEvent
 
     data object OnClickButtonChange : RateEvent
@@ -24,6 +32,6 @@ sealed interface RateEvent {
     data class OnChangeTextBaseValute(val newText: String) : RateEvent
     data class OnChangeTextResultValute(val newText: String) : RateEvent
 
-    data object OnClickSwap: RateEvent
-    data object OnClickDoneKeyboard: RateEvent
+    data object OnClickSwap : RateEvent
+    data object OnClickDoneKeyboard : RateEvent
 }

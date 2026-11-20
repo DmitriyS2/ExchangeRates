@@ -19,40 +19,45 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.sd.exchangerates.domain.dto.Valute
-import com.sd.exchangerates.presentation.ui.contract.RateEvent
-import com.sd.exchangerates.presentation.ui.contract.RateState
-import com.sd.exchangerates.util.noActions
+import com.sd.exchangerates.domain.dto.rub
 
 @Composable
-fun AddResultCurrency(
-    onEvent: (RateEvent) -> Unit,
-    state: RateState,
+fun AddCurrencyMenu(
+    expanded: Boolean,
+    currencies: List<Valute>,
+    onDismissRequest: () -> Unit,
+    onClickCurrency: (Valute) -> Unit,
 ) {
-
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    if (state.allResultCurrency.isNotEmpty()) {
+    if (currencies.isNotEmpty()) {
         DropdownMenu(
             modifier = Modifier
                 .width(60.dp)
                 .heightIn(max = 200.dp),
-            expanded = state.isResultValuteMenuVisible,
+            expanded = expanded,
             offset = DpOffset((200).dp, (-10).dp),
             properties = PopupProperties(focusable = false),
-            onDismissRequest = {
-                onEvent.invoke(RateEvent.OnChangeResultValuteMenuVisibility(false))
-            },
+            onDismissRequest = onDismissRequest,
+//        scrollState = TODO(),
+//        shape = TODO(),
+//        containerColor = TODO(),
+//        tonalElevation = TODO(),
+//      shadowElevation = 3.dp,//TODO(),
             border = BorderStroke(width = 2.dp, color = Color.Black)//TODO(),
         ) {
-            state.allResultCurrency.forEach { valute ->
-                DropdownMenuItem(text = {
-                    Text(valute.code, textAlign = TextAlign.Center)
-                }, onClick = {
-                    onEvent.invoke(RateEvent.OnChangeResultValute(valute))
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                })
+            currencies.forEach { valute ->
+                DropdownMenuItem(
+                    text = {
+                        Text(valute.code, textAlign = TextAlign.Center)
+                    },
+                    onClick = {
+                        onClickCurrency(valute)
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    }
+                )
             }
         }
     }
@@ -60,15 +65,14 @@ fun AddResultCurrency(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewAddResultCurrencyMenu() {
+fun PreviewAddCurrencyMenu() {
     Box(modifier = Modifier.size(300.dp)) {
         Box(modifier = Modifier.size(1.dp)) {
-            AddResultCurrency(
-                { noActions() },
-                RateState(
-                    isResultValuteMenuVisible = true,
-                    allCurrency = listOf(Valute(code = "RUB"), Valute(code = "USD"))
-                ),
+            AddCurrencyMenu(
+                expanded = true,
+                currencies = listOf(rub, rub),
+                onDismissRequest = {},
+                onClickCurrency = { Valute() },
             )
         }
     }

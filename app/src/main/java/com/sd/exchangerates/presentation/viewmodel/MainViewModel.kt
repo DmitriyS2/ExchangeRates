@@ -10,6 +10,7 @@ import com.sd.exchangerates.domain.usecase.GetAllCurrenciesUseCase
 import com.sd.exchangerates.presentation.ui.contract.RateEffect
 import com.sd.exchangerates.presentation.ui.contract.RateEvent
 import com.sd.exchangerates.presentation.ui.contract.RateState
+import com.sd.exchangerates.util.BASE_STRING
 import com.sd.exchangerates.util.EMPTY
 import com.sd.exchangerates.util.separate
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,10 +47,18 @@ class MainViewModel @Inject constructor(
 
             is RateEvent.OnChangeSumma -> setBaseAmount(event.newSumma)
 
-            is RateEvent.OnChangeResultValuteMenuVisibility -> changeResultMenuVisibility(event.isVisible)
+            is RateEvent.OnChangeResultValuteMenuVisibility -> changeResultMenuVisibility(
+                event.isVisible,
+                event.cleanEditText
+            )
+
             is RateEvent.OnChangeResultValute -> setResultValute(event.valute)
 
-            is RateEvent.OnChangeBaseValuteMenuVisibility -> changeBaseMenuVisibility(event.isVisible)
+            is RateEvent.OnChangeBaseValuteMenuVisibility -> changeBaseMenuVisibility(
+                event.isVisible,
+                event.cleanEditText
+            )
+
             is RateEvent.OnChangeBaseValute -> setBaseValute(event.valute)
 
             RateEvent.OnClickButtonChange -> onClickChange()
@@ -183,12 +192,28 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun changeBaseMenuVisibility(isVisible: Boolean) {
-        _state.update { it.copy(isBaseValuteMenuVisible = isVisible) }
+    private fun changeBaseMenuVisibility(isVisible: Boolean, cleanEditText: Boolean) {
+        val baseText = if (cleanEditText) BASE_STRING else _state.value.textBaseValute
+        val baseValutes = if (cleanEditText) _state.value.allCurrency else _state.value.allBaseCurrency
+        _state.update {
+            it.copy(
+                isBaseValuteMenuVisible = isVisible,
+                textBaseValute = baseText,
+                allBaseCurrency = baseValutes
+            )
+        }
     }
 
-    private fun changeResultMenuVisibility(isVisible: Boolean) {
-        _state.update { it.copy(isResultValuteMenuVisible = isVisible) }
+    private fun changeResultMenuVisibility(isVisible: Boolean, cleanEditText: Boolean) {
+        val resultText = if (cleanEditText) BASE_STRING else _state.value.textResultValute
+        val resultValutes = if (cleanEditText) _state.value.allCurrency else _state.value.allResultCurrency
+        _state.update {
+            it.copy(
+                isResultValuteMenuVisible = isVisible,
+                textResultValute = resultText,
+                allResultCurrency = resultValutes
+            )
+        }
     }
 
     private fun isErrorNumber(text: String): Boolean {
